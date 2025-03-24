@@ -1,0 +1,171 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.signup-container {
+  display: flex;
+  height: 100vh;
+}
+
+.signup-left {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.signup-right {
+  flex: 1;
+  background-color: #1a1a1a;
+  overflow: hidden;
+}
+
+.signup-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-container {
+  margin-bottom: 2rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo img {
+  width: 30px;
+  height: 30px;
+}
+
+.logo span {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #000;
+}
+
+.signup-form-container {
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.signin-link {
+  margin-bottom: 1.5rem;
+}
+
+.signin-link a {
+  color: #3d87f6;
+  text-decoration: none;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 1rem;
+}
+
+.terms-checkbox {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 2rem; /* Increased margin to separate from button */
+  align-items: flex-start;
+}
+
+.terms-checkbox input {
+  margin-top: 3px;
+  cursor: pointer; /* Ensure checkbox is clickable */
+}
+
+.terms-checkbox label {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  cursor: pointer; /* Ensure label is clickable */
+}
+
+.terms-checkbox a {
+  color: #3d87f6;
+  text-decoration: none;
+}
+
+.signup-button {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: #e6e6e6;
+  color: #333;
+  border: none;
+  border-radius: 999px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: 2rem; /* Increased margin to separate from reCAPTCHA notice */
+}
+
+.signup-button:hover {
+  background-color: #d9d9d9;
+}
+
+.recaptcha-notice {
+  font-size: 0.75rem;
+  color: #777;
+  text-align: center;
+  margin-top: 1rem; /* Added margin to separate from button */
+  /* Removed position: absolute to let it flow naturally */
+}
+
+.recaptcha-notice a {
+  color: #777;
+  text-decoration: none;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+@media (max-width: 992px) {
+  .signup-right {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .signup-left {
+    padding: 1.5rem;
+  }
+  
+  .signup-form-container {
+    max-width: 100%;
+  }
+}
