@@ -1,14 +1,14 @@
 // meeting-scheduler-frontend/src/pages/PreferencesPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../api'; // Import API utility
+import API from '../api';
 import '../styles/PreferencesPage.css';
 
 const PreferencesPage = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [error, setError] = useState(''); // Add error state for validation feedback
+  const [error, setError] = useState('');
   
   const categories = [
     { id: 'sales', name: 'Sales', icon: '💼' },
@@ -32,7 +32,6 @@ const PreferencesPage = () => {
     }
 
     try {
-      // Get the token from localStorage
       const token = localStorage.getItem('token');
       if (!token) {
         setError('You are not authenticated. Please log in again.');
@@ -40,7 +39,6 @@ const PreferencesPage = () => {
         return;
       }
 
-      // Send preferences to the backend
       await API.put(
         '/user/preferences',
         { username, category: selectedCategory },
@@ -51,8 +49,7 @@ const PreferencesPage = () => {
         }
       );
 
-      // On success, navigate to the dashboard
-      navigate('/dashboard');
+      navigate('/dashboard'); // Redirect to Dashboard (Screen 1)
     } catch (err) {
       console.log('Error saving preferences:', err);
       setError(err.response?.data?.message || 'Failed to save preferences. Please try again.');
@@ -72,7 +69,7 @@ const PreferencesPage = () => {
         <div className="preferences-content">
           <h1>Your Preferences</h1>
           
-          {error && <p className="error-message">{error}</p>} {/* Display error message */}
+          {error && <p className="error-message">{error}</p>}
           
           <div className="form-group">
             <input

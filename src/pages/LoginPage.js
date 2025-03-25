@@ -1,11 +1,12 @@
+// meeting-scheduler-frontend/src/pages/LoginPage.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import API from '../api'; // Ensure api.js exists in src/
+import API from '../api';
 import '../styles/LoginPage.css';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
-    email: '', // Changed to match backend
+    email: '',
     password: '',
     showPassword: false,
   });
@@ -40,7 +41,7 @@ const LoginPage = () => {
         password: formData.password,
       });
       localStorage.setItem('token', response.data.token); // Store JWT
-      navigate('/dashboard'); // Redirect to dashboard (create later)
+      navigate('/preference'); // Changed from /dashboard to /preference
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     }
