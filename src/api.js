@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api', // Must match your backend
+  baseURL: 'https://meeting-scheduler-backend-dwlu.onrender.com/api', // Must match your backend
 });
 
 API.interceptors.request.use((req) => {
