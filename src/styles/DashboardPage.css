@@ -1,166 +1,251 @@
 /* meeting-scheduler-frontend/src/styles/DashboardPage.css */
 .landing-page {
-    display: flex;
-    height: 100vh;
-    font-family: 'Inter', sans-serif;
-  }
-  
-  .sidebar {
-    width: 250px;
-    background-color: #ffffff;
-    border-right: 1px solid #e0e0e0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .logo {
-    margin-bottom: 30px;
-  }
-  
-  .sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    color: #6B7280;
-    cursor: pointer;
-    border-radius: 8px;
-  }
-  
-  .nav-item.active {
-    background-color: #F3F4F6;
-    color: #2563EB;
-  }
-  
-  .create-btn {
-    margin-top: auto;
-    background-color: #2563EB;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  
-  .main-content {
-    flex-grow: 1;
-    padding: 30px;
-    background-color: #F9FAFB;
-  }
-  
-  .main-content header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-  }
-  
-  .add-new-event-btn {
-    background-color: #2563EB;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .events-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .no-events-placeholder {
-    text-align: center;
-    color: #6B7280;
-    padding: 50px;
-    background-color: white;
-    border-radius: 12px;
-    border: 1px dashed #E5E7EB;
-  }
-  
-  .event-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-  }
-  
-  .event-card {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-  }
-  
-  .event-banner {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .event-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-bottom: 10px;
-  }
-  
-  .event-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .event-title {
-    color: white;
-    font-size: 18px;
-    margin: 0;
-    text-align: center;
-  }
-  
-  .event-details {
-    padding: 15px;
-  }
-  
-  .event-details p {
-    margin: 8px 0;
-    color: #374151;
-  }
-  
-  .event-details a {
-    color: #2563EB;
-    text-decoration: none;
-  }
-  
-  .event-details a:hover {
-    text-decoration: underline;
-  }
-  
-  .user-profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 15px;
-    border-top: 1px solid #E5E7EB;
-  }
-  
-  .user-profile img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-  }
-  
-  .error-message {
-    color: #d32f2f;
-    font-size: 0.9rem;
-    text-align: center;
-  }
+  display: flex;
+  height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  margin-bottom: 30px;
+}
+
+.profile-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #F3F4F6;
+  position: relative;
+  cursor: pointer;
+  margin-top: 20px; /* Reduced margin to move the profile badge higher */
+}
+
+.profile-badge img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.signout-dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.signout-dropdown button {
+  background: none;
+  border: none;
+  padding: 10px;
+  color: #EF4444;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.signout-dropdown button:hover {
+  background-color: #F3F4F6;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+  margin-bottom: 30px; /* Added margin to push the create button further up */
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  color: #6B7280;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.nav-item.active {
+  background-color: #F3F4F6;
+  color: #2563EB;
+}
+
+.create-btn {
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+  background-color: #F9FAFB;
+}
+
+.main-content header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.add-new-event-btn {
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.events-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.no-events-placeholder {
+  text-align: center;
+  color: #6B7280;
+  padding: 50px;
+  background-color: white;
+  border-radius: 12px;
+  border: 1px dashed #E5E7EB;
+}
+
+.event-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.event-card {
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  padding: 16px;
+  box-shadow: none;
+}
+
+.event-active {
+  border-top: 12px solid #2563EB; /* Increased thickness to 12px (3x thicker than 4px) */
+}
+
+.event-inactive {
+  border-top: 12px solid #6B7280; /* Increased thickness to 12px (3x thicker than 4px) */
+}
+
+.event-details {
+  margin-bottom: 16px;
+}
+
+.event-details p {
+  margin: 8px 0;
+  color: #374151;
+  font-size: 14px;
+}
+
+.event-details a {
+  color: #2563EB;
+  text-decoration: none;
+}
+
+.event-details a:hover {
+  text-decoration: underline;
+}
+
+.event-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Switch Styles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #6B7280; /* Grey when toggle is off */
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2563EB; /* Blue when toggle is on */
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.copy-btn,
+.edit-btn,
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  color: #6B7280;
+  font-size: 14px;
+}
+
+.copy-btn:hover,
+.edit-btn:hover {
+  color: #2563EB;
+}
+
+.delete-btn:hover {
+  color: #EF4444;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  text-align: center;
+}

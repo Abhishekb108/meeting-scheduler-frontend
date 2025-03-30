@@ -10,6 +10,7 @@ import CreateEventPage from './pages/CreateEventPage';
 import EventLinkPage from './pages/EventLinkPage';
 import SettingsPage from './pages/SettingsPage';
 import BookingPage from './pages/BookingPage';
+import AvailabilityPage from './pages/AvailabilityPage'; // Added import
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
       <Route path="/event-link/:id" element={<EventLinkPage />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/booking" element={<BookingPage />} />
+      <Route path="/availability" element={<AvailabilityPage />} /> {/* Added route */}
     </Routes>
   );
 }

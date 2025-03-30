@@ -1,12 +1,11 @@
-// meeting-scheduler-frontend/src/pages/SettingsPage.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; // Added useLocation
+import { useNavigate, useLocation } from 'react-router-dom';
 import API from '../api';
 import '../styles/SettingsPage.css';
 
 function SettingsPage() {
   const navigate = useNavigate();
-  const location = useLocation(); // To determine the current route for active link styling
+  const location = useLocation();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -14,8 +13,9 @@ function SettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [userName, setUserName] = useState(null); // Initially null to avoid flash
+  const [showSignOut, setShowSignOut] = useState(false);
 
-  // Fetch user details on component mount
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -36,6 +36,7 @@ function SettingsPage() {
         setFirstName(user.firstName || '');
         setLastName(user.lastName || '');
         setEmail(user.email || '');
+        setUserName(user.username || 'User');
       } catch (err) {
         console.log('Error fetching user details:', err);
         setError(err.response?.data?.message || 'Failed to fetch user details.');
@@ -50,7 +51,6 @@ function SettingsPage() {
     setError('');
     setSuccessMessage('');
 
-    // Basic validation
     if (password && password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -64,39 +64,45 @@ function SettingsPage() {
         return;
       }
 
-      // Prepare update data
       const updateData = {
         email: email.trim(),
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
       };
       if (password) {
         updateData.password = password;
       }
 
-      // Update user profile
       const response = await API.put('/user/settings', updateData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      // Show success message
       setSuccessMessage('Updated Successfully');
 
-      // Clear password fields
       setPassword('');
       setConfirmPassword('');
 
-      // Check if logout is required
       if (response.data.shouldLogout) {
         localStorage.removeItem('token');
         setTimeout(() => {
           navigate('/login');
-        }, 2000); // Redirect to login after 2 seconds
+        }, 2000);
       }
     } catch (err) {
       console.log('Error updating profile:', err);
       setError(err.response?.data?.message || 'Failed to update profile.');
     }
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const toggleSignOut = () => {
+    setShowSignOut((prev) => !prev);
   };
 
   return (
@@ -114,11 +120,14 @@ function SettingsPage() {
           </div>
           <div
             className={`nav-item ${location.pathname === '/booking' ? 'active' : ''}`}
-            onClick={() => navigate('/booking')} // Added navigation to /booking
+            onClick={() => navigate('/booking')}
           >
             Booking
           </div>
-          <div className="nav-item">
+          <div
+            className={`nav-item ${location.pathname === '/availability' ? 'active' : ''}`}
+            onClick={() => navigate('/availability')}
+          >
             Availability
           </div>
           <div
@@ -128,10 +137,17 @@ function SettingsPage() {
             Settings
           </div>
         </nav>
-        <div className="profile-badge">
-          <img src="/man.png" alt="Profile" />
-          <span>sarthak pal</span>
-        </div>
+        {userName && (
+          <div className="profile-badge" onClick={toggleSignOut}>
+            <img src="/boy.png" alt="Profile" />
+            <span>{userName}</span>
+            {showSignOut && (
+              <div className="signout-dropdown">
+                <button onClick={handleSignOut}>Sign Out</button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="profile-content">
@@ -202,7 +218,9 @@ function SettingsPage() {
               />
             </div>
 
-            <button type="submit" className="save-button">Save</button>
+            <button type="submit" className="save-button">
+              Save
+            </button>
           </div>
         </form>
       </div>

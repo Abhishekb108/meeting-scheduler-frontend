@@ -1,165 +1,196 @@
 /* meeting-scheduler-frontend/src/styles/PreferencesPage.css */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-  }
-  
-  .preferences-container {
-    display: flex;
-    height: 100vh;
-  }
-  
-  .preferences-left {
-    flex: 1;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-  
-  .preferences-right {
-    flex: 1;
-    background-color: #1a1a1a;
-    overflow: hidden;
-  }
-  
-  .preferences-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .logo-container {
-    margin-bottom: 2rem;
-  }
-  
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .logo img {
-    width: 30px;
-    height: 30px;
-  }
-  
-  .logo span {
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: #000;
-  }
-  
-  .preferences-content {
-    max-width: 720px;
-    margin: 0 auto;
-    width: 100%;
-  }
-  
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    color: #333;
-  }
-  
-  .username-input {
-    width: 100%;
-    padding: 0.9rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    background-color: #f8f8f8;
-    font-size: 1rem;
-    margin-bottom: 2rem;
-  }
-  
-  .category-label {
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
-    color: #333;
-    font-weight: bold;
-  }
-  
-  .categories-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-  
-  .category-card {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .category-card:hover {
-    border-color: #a0a0a0;
-    background-color: #f9f9f9;
-  }
-  
-  .category-card.selected {
-    border-color: #1a73e8;
-    background-color: rgba(26, 115, 232, 0.05);
-  }
-  
-  .category-icon {
-    margin-right: 1rem;
-    font-size: 1.2rem;
-  }
-  
-  .category-name {
-    font-size: 0.95rem;
-  }
-  
-  .continue-button {
-    width: 100%;
-    padding: 1rem;
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-    border-radius: 999px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  .continue-button:hover {
-    background-color: #1765cc;
-  }
-  /* Add this to meeting-scheduler-frontend/src/styles/PreferencesPage.css */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.preferences-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+.preferences-left {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.preferences-right {
+  flex: 1;
+  background-color: #1a1a1a;
+  overflow: hidden;
+}
+
+.preferences-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-container {
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo img {
+  width: 30px;
+  height: 30px;
+}
+
+.logo span {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #000;
+}
+
+.preferences-content {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+  line-height: 1.2;
+}
+
+.username-input {
+  width: 100%;
+  padding: 0.9rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.category-label {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-weight: bold;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.category-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-card:hover {
+  border-color: #a0a0a0;
+  background-color: #f9f9f9;
+}
+
+.category-card.selected {
+  border-color: #1a73e8;
+  background-color: rgba(26, 115, 232, 0.05);
+}
+
+.category-icon {
+  margin-right: 1rem;
+  font-size: 1.2rem;
+}
+
+.category-name {
+  font-size: 0.95rem;
+}
+
+.continue-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.continue-button:hover {
+  background-color: #1765cc;
+}
+
 .error-message {
-    color: #d32f2f;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+  color: #d32f2f;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 992px) {
+  .preferences-container {
+      flex-direction: column;
+      height: auto;
+      min-height: 100vh;
   }
-  
-  @media (max-width: 992px) {
-    .preferences-right {
-      display: none;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .preferences-left {
+
+  .preferences-left {
+      order: 1;
       padding: 1.5rem;
-    }
-    
-    .preferences-content {
       max-width: 100%;
-    }
-    
-    h1 {
+      justify-content: flex-start;
+  }
+
+  .preferences-right {
+      display: none;
+  }
+
+  .preferences-content {
+      max-width: 100%;
+      width: 100%;
+  }
+
+  h1 {
       font-size: 2rem;
       margin-bottom: 1.5rem;
-    }
-    
-    .categories-grid {
-      grid-template-columns: 1fr;
-    }
   }
+
+  .categories-grid {
+      grid-template-columns: 1fr;
+  }
+}
+
+/* Smaller Mobile Devices */
+@media (max-width: 480px) {
+  .preferences-left {
+      padding: 1rem;
+  }
+
+  h1 {
+      font-size: 1.8rem;
+  }
+
+  .logo-container {
+      margin-bottom: 2rem;
+  }
+}

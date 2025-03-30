@@ -1,4 +1,3 @@
-// meeting-scheduler-frontend/src/pages/LoginPage.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import API from '../api';
@@ -11,6 +10,7 @@ const LoginPage = () => {
     showPassword: false,
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -28,22 +28,41 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     // Client-side validation
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters');
+      setIsLoading(false);
       return;
     }
 
     try {
-      const response = await API.post('/auth/login', {
+      // Step 1: Login
+      const loginResponse = await API.post('/auth/login', {
         email: formData.email,
         password: formData.password,
       });
-      localStorage.setItem('token', response.data.token); // Store JWT
-      navigate('/preference'); // Changed from /dashboard to /preference
+      
+      // Store JWT
+      localStorage.setItem('token', loginResponse.data.token);
+      
+      // Step 2: Check if user has completed preferences
+      const prefStatusResponse = await API.get('/user/preferences-status', {
+        headers: {
+          Authorization: `Bearer ${loginResponse.data.token}`,
+        },
+      });
+      
+      // Step 3: Redirect based on preferences status
+      if (prefStatusResponse.data.hasCompletedPreferences) {
+        navigate('/dashboard'); // Go directly to dashboard if preferences completed
+      } else {
+        navigate('/preference'); // Go to preferences page first time
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setIsLoading(false);
     }
   };
 
@@ -53,7 +72,7 @@ const LoginPage = () => {
         <div className="logo-container">
           <div className="logo">
             <img src="/logo.png" alt="CNNCT Logo" />
-            <span>CNNCT</span>
+           
           </div>
         </div>
 
@@ -72,6 +91,7 @@ const LoginPage = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -85,11 +105,13 @@ const LoginPage = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   className="toggle-password"
                   onClick={togglePasswordVisibility}
+                  disabled={isLoading}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -109,8 +131,8 @@ const LoginPage = () => {
               </div>
             </div>
 
-            <button type="submit" className="login-button">
-              Log in
+            <button type="submit" className="login-button" disabled={isLoading}>
+              {isLoading ? 'Logging in...' : 'Log in'}
             </button>
           </form>
 

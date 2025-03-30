@@ -60,7 +60,6 @@ const SignupPage = () => {
         <div className="logo-container">
           <div className="logo">
             <img src="/logo.png" alt="CNNCT Logo" />
-            <span>CNNCT</span>
           </div>
         </div>
 

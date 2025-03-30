@@ -1,18 +1,77 @@
-// meeting-scheduler-frontend/src/pages/CreateEventPage.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import API from '../api';
 import '../styles/CreateEventPage.css';
 
 function CreateEventPage() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const location = useLocation();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editEventId, setEditEventId] = useState(location.state?.editEventId || null);
   const [formData, setFormData] = useState({
     title: '',
     dateTime: '',
-    duration: '60', // Default to 60 minutes
-    type: 'group', // Default to group meeting
+    duration: '60',
+    type: 'group',
+    password: '',
+    description: '',
   });
+  const [userName, setUserName] = useState('');
+  const [existingMeetings, setExistingMeetings] = useState([]);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('You are not authenticated. Please log in again.');
+          navigate('/login');
+          return;
+        }
+
+        const userResponse = await API.get('/user', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserName(userResponse.data.user.username || 'User');
+
+        const meetingsResponse = await API.get('/meetings', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setExistingMeetings(meetingsResponse.data.meetings || []);
+
+        if (id) {
+          setIsEditing(true);
+          const eventResponse = await API.get(`/meetings/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const event = eventResponse.data.meeting;
+          if (event) {
+            setFormData({
+              title: event.title || '',
+              dateTime: event.dateTime ? new Date(event.dateTime).toISOString().slice(0, 16) : '',
+              duration: '60',
+              type: 'group',
+              password: event.password || '',
+              description: event.description || '',
+            });
+          }
+        }
+      } catch (err) {
+        console.log('Error fetching data:', err);
+        setError(err.response?.data?.message || 'Failed to fetch data.');
+      }
+    };
+
+    fetchUserData();
+  }, [navigate, id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,17 +81,37 @@ function CreateEventPage() {
     }));
   };
 
+  const checkForConflict = () => {
+    const newMeetingStart = new Date(formData.dateTime);
+    const newMeetingEnd = new Date(newMeetingStart.getTime() + parseInt(formData.duration) * 60 * 1000);
+
+    return existingMeetings.some((meeting) => {
+      if (isEditing && meeting._id === id) return false;
+      const existingStart = new Date(meeting.dateTime);
+      const existingEnd = new Date(existingStart.getTime() + 60 * 60 * 1000);
+      return (
+        (newMeetingStart >= existingStart && newMeetingStart < existingEnd) ||
+        (newMeetingEnd > existingStart && newMeetingEnd <= existingEnd) ||
+        (newMeetingStart <= existingStart && newMeetingEnd >= existingEnd)
+      );
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Validate form data
     if (!formData.title || formData.title.trim().length < 3) {
       setError('Event title is required and must be at least 3 characters');
       return;
     }
     if (!formData.dateTime) {
       setError('Date and time are required');
+      return;
+    }
+
+    if (checkForConflict()) {
+      setError('This time slot conflicts with an existing meeting.');
       return;
     }
 
@@ -44,66 +123,116 @@ function CreateEventPage() {
         return;
       }
 
-      // Send event data to backend
-      const response = await API.post(
-        '/meetings',
-        {
-          title: formData.title,
-          dateTime: formData.dateTime,
-          description: '', // Optional field
-          link: `https://cnnct.com/meeting/${Date.now()}`, // Generate a dummy link for now
-          status: 'accepted',
-          category: 'upcoming',
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+      if (isEditing) {
+        await API.put(
+          `/meetings/${id}`,
+          {
+            title: formData.title,
+            dateTime: formData.dateTime,
+            description: formData.description,
+            password: formData.password,
           },
-        }
-      );
-
-      // Navigate to Screen 3 (Event Link Sharing) with the meeting ID
-      navigate(`/event-link/${response.data.meeting._id}`);
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        navigate(`/event-link/${id}`, { state: { userName } });
+      } else {
+        const response = await API.post(
+          '/meetings',
+          {
+            title: formData.title,
+            dateTime: formData.dateTime,
+            description: formData.description,
+            link: `https://cnnct.com/meeting/${Date.now()}`,
+            status: 'accepted',
+            category: 'upcoming',
+            password: formData.password,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        navigate(`/event-link/${response.data.meeting._id}`, { state: { userName, editEventId } });
+      }
     } catch (err) {
-      console.log('Error creating event:', err);
-      setError(err.response?.data?.message || 'Failed to create event. Please try again.');
+      console.log('Error saving event:', err);
+      setError(err.response?.data?.message || 'Failed to save event. Please try again.');
     }
   };
 
   return (
-    <div className="signup-container">
-      <div className="signup-card">
-        <div className="logo">
-          <img src="/logo.png" alt="CNNCT Logo" />
-        </div>
-        <h2>Create New Event</h2>
+    <div className="create-event-container">
+      <div className="create-event-card">
+        <h2>{isEditing ? 'Edit Event' : 'Add Event'}</h2>
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="title">Event Title</label>
+            <label htmlFor="title">Event Topic *</label>
             <input
               type="text"
               id="title"
               name="title"
-              placeholder="Enter event title"
+              placeholder="Set a conference topic before it starts"
               value={formData.title}
               onChange={handleChange}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="dateTime">Date and Time</label>
+            <label htmlFor="password">Password</label>
             <input
-              type="datetime-local"
-              id="dateTime"
-              name="dateTime"
-              value={formData.dateTime}
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
               onChange={handleChange}
-              required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="duration">Duration (minutes)</label>
+            <label htmlFor="hostName">Host name *</label>
+            <input
+              type="text"
+              id="hostName"
+              name="hostName"
+              value={userName}
+              disabled
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              placeholder=""
+              value={formData.description}
+              onChange={handleChange}
+              rows="3"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="dateTime">Date and time *</label>
+            <div className="date-time-group">
+              <input
+                type="datetime-local"
+                id="dateTime"
+                name="dateTime"
+                value={formData.dateTime}
+                onChange={handleChange}
+                required
+              />
+              <select className="timezone-select">
+                <option value="UTC+5:00">UTC +5:00 Delhi</option>
+              </select>
+            </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="duration">Set duration</label>
             <select
               id="duration"
               name="duration"
@@ -112,27 +241,17 @@ function CreateEventPage() {
             >
               <option value="15">15 minutes</option>
               <option value="30">30 minutes</option>
-              <option value="60">60 minutes</option>
+              <option value="60">1 hour</option>
               <option value="90">90 minutes</option>
             </select>
           </div>
-          <div className="form-group">
-            <label htmlFor="type">Event Type</label>
-            <select
-              id="type"
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-            >
-              <option value="group">Group Meeting</option>
-              <option value="one-on-one">One-on-One</option>
-            </select>
+          <div className="form-actions">
+            <button type="button" className="cancel-btn" onClick={() => navigate('/dashboard', { state: { userName } })}>
+              Cancel
+            </button>
+            <button type="submit" className="save-btn">Save</button>
           </div>
-          <button type="submit" className="signup-btn">Save</button>
         </form>
-        <div className="login-link">
-          <a href="/dashboard">Back to Dashboard</a>
-        </div>
       </div>
     </div>
   );

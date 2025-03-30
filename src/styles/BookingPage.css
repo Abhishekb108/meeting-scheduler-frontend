@@ -1,246 +1,367 @@
 /* meeting-scheduler-frontend/src/styles/BookingPage.css */
 body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background-color: #f4f4f4;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f4f4f4;
+}
+
+.booking-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-logo {
+  margin-bottom: 40px;
+}
+
+.sidebar-logo img {
+  width: 100px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #6B7280;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.nav-item.active {
+  background-color: #2563EB;
+  color: white;
+}
+
+.profile-badge {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #F3F4F6;
+  position: relative;
+  cursor: pointer;
+}
+
+.profile-badge img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.signout-dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.signout-dropdown button {
+  background: none;
+  border: none;
+  padding: 10px;
+  color: #EF4444;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.signout-dropdown button:hover {
+  background-color: #F3F4F6;
+}
+
+.booking-content {
+  flex-grow: 1;
+  padding: 40px;
+  background-color: #f4f4f4;
+  overflow-y: auto;
+}
+
+.booking-content h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #111827;
+}
+
+.booking-content > p {
+  color: #6B7280;
+  margin-bottom: 30px;
+}
+
+.booking-tabs {
+  display: flex;
+  border-bottom: 1px solid #E5E7EB;
+  margin-bottom: 20px;
+}
+
+.booking-tabs button {
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  color: #6B7280;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  text-transform: capitalize;
+}
+
+.booking-tabs button.active {
+  color: #2563EB;
+  border-bottom: 2px solid #2563EB;
+}
+
+.meetings-list {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.meeting-item {
+  border-bottom: 1px solid #E5E7EB;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.meeting-item:hover {
+  background-color: #F9FAFB;
+}
+
+.meeting-row {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+
+.meeting-date-column {
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  min-width: 150px;
+}
+
+.meeting-day {
+  font-weight: 500;
+  color: #111827;
+}
+
+.meeting-day-month {
+  font-weight: normal;
+  color: #6B7280;
+  margin-bottom: 4px;
+}
+
+.meeting-time {
+  color: #4B5563;
+  font-size: 14px;
+}
+
+.meeting-details-column {
+  flex-grow: 1;
+  padding-right: 20px;
+}
+
+.meeting-title {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.meeting-participants {
+  color: #6B7280;
+  font-size: 14px;
+}
+
+.meeting-actions-column {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.meeting-people {
+  display: flex;
+  align-items: center;
+  color: #6B7280;
+  font-size: 14px;
+}
+
+.people-icon {
+  margin-right: 5px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.reject-btn,
+.accept-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.reject-btn {
+  background-color: #FF4444;
+  color: white;
+}
+
+.accept-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.meeting-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.meeting-status.accepted {
+  background-color: #E6F2E6;
+  color: #2E7D32;
+}
+
+.meeting-status.rejected {
+  background-color: #FFEBEE;
+  color: #D32F2F;
+}
+
+.participants-panel {
+  border-top: 1px solid #E5E7EB;
+  background-color: white;
+}
+
+.hover-panel {
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 12px 12px;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  
-  .booking-container {
-    display: flex;
-    height: 100vh;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .sidebar {
-    width: 250px;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .sidebar-logo {
-    margin-bottom: 40px;
-  }
-  
-  .sidebar-logo img {
-    width: 100px;
-  }
-  
-  .sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #6B7280;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 8px;
-  }
-  
-  .nav-item.active {
-    background-color: #2563EB;
-    color: white;
-  }
-  
-  .profile-badge {
-    margin-top: auto;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 8px;
-    background-color: #F3F4F6;
-  }
-  
-  .profile-badge img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-  }
-  
-  .booking-content {
-    flex-grow: 1;
-    padding: 40px;
-    background-color: #f4f4f4;
-    overflow-y: auto;
-  }
-  
-  .booking-content h1 {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #111827;
-  }
-  
-  .booking-content > p {
-    color: #6B7280;
-    margin-bottom: 30px;
-  }
-  
-  .error-message {
-    color: #d32f2f;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-  
-  .booking-tabs {
-    display: flex;
-    border-bottom: 1px solid #E5E7EB;
-    margin-bottom: 20px;
-  }
-  
-  .booking-tabs button {
-    padding: 12px 20px;
-    border: none;
-    background: none;
-    color: #6B7280;
-    font-weight: 500;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    text-transform: capitalize;
-  }
-  
-  .booking-tabs button.active {
-    color: #2563EB;
-    border-bottom: 2px solid #2563EB;
-  }
-  
-  .meetings-list {
-    background-color: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .meeting-item {
-    display: flex;
-    flex-direction: column;
-    padding: 15px;
-    border-bottom: 1px solid #E5E7EB;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .meeting-item:hover {
-    background-color: #F3F4F6;
-  }
-  
-  .meeting-date {
-    color: #6B7280;
-    font-size: 14px;
-    margin-bottom: 5px;
-  }
-  
-  .meeting-time {
-    font-weight: 500;
-    color: #111827;
-    margin-bottom: 5px;
-  }
-  
-  .meeting-title {
-    color: #111827;
-    margin-bottom: 10px;
-  }
-  
-  .meeting-details {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .meeting-participants {
-    color: #6B7280;
-    font-size: 14px;
-    margin-right: 10px;
-  }
-  
-  .meeting-status {
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-  }
-  
-  .meeting-status.accepted {
-    background-color: #E6F2E6;
-    color: #2E7D32;
-  }
-  
-  .meeting-status.rejected {
-    background-color: #FFEBEE;
-    color: #D32F2F;
-  }
-  
-  .meeting-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .reject-btn, .accept-btn {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-  }
-  
-  .reject-btn {
-    background-color: #FF4444;
-    color: white;
-  }
-  
-  .accept-btn {
-    background-color: #4CAF50;
-    color: white;
-  }
-  
-  .participants-modal {
-    position: fixed;
-    top: 50%;
-    right: 20px;
-    transform: translateY(-50%);
-    width: 300px;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    z-index: 10;
-  }
-  
-  .participants-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .participant-actions {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .participants-list {
-    max-height: 400px;
-    overflow-y: auto;
-  }
-  
-  .participant-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    border-bottom: 1px solid #E5E7EB;
-  }
-  
-  .participant-item img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-  }
+}
+
+.participants-header {
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.participants-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #111827;
+}
+
+.participants-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.participant-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.participant-item:last-child {
+  border-bottom: none;
+}
+
+.participant-img-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.participant-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: #4B5563;
+}
+
+.participant-item span {
+  color: #4B5563;
+  font-size: 14px;
+}
+
+.participant-item input[type="checkbox"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #2563EB;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+.participant-item input[type="checkbox"]:checked {
+  background-color: #2563EB;
+  position: relative;
+}
+
+.participant-item input[type="checkbox"]:checked::after {
+  content: '✓';
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.no-meetings {
+  padding: 20px;
+  text-align: center;
+  color: #6B7280;
+}
+
+.meeting-item.selected {
+  background-color: #F9FAFB;
+}

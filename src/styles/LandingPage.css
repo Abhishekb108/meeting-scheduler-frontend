@@ -1,483 +1,109 @@
-/* Global Styles (scoped to LandingPage via React) */
-.landing-container {
-    max-width: 100%;
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
     overflow-x: hidden;
-}
-
-/* Button Styles */
-.signup-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    text-decoration: none; /* Added for Link compatibility */
-}
-
-.signup-btn:hover {
-    background-color: #0069d9;
-}
-
-.header-btn {
-    font-size: 14px;
-}
-
-.hero-btn {
-    font-size: 16px;
-    padding: 12px 24px;
-    margin: 20px 0;
-}
-
-/* Header Styles */
-.header {
+  }
+  
+  .landing-page-image-only {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .landing-page-header {
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px 40px;
-    background-color: transparent;
-    position: absolute;
-    width: 100%;
-    top: 0;
-    left: 0;
-    z-index: 10;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-}
-
-.logo {
-    height: 24px;
-    margin-right: 8px;
-}
-
-.logo-text {
-    font-weight: 700;
-    font-size: 18px;
-    color: #007bff;
-}
-
-/* Hero Section Styles */
-.hero-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 120px 20px 60px;
-    background-color: #f8f9fa;
-}
-
-.hero-title {
-    font-size: 48px;
-    font-weight: 800;
-    margin-bottom: 20px;
-    line-height: 1.2;
-    max-width: 800px;
-}
-
-.dashboard-preview {
-    max-width: 900px;
-    width: 90%;
-    margin: 40px auto;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.dashboard-img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-/* Features Section Styles */
-.features-section {
-    padding: 60px 20px;
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.features-title {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 20px;
-}
-
-.features-description {
-    font-size: 18px;
-    color: #555;
-    line-height: 1.6;
-}
-
-/* Calendar Section Styles */
-.calendar-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 80px 40px;
-    background-color: #fff;
-}
-
-.calendar-content {
-    flex: 1;
-    max-width: 500px;
-    padding-right: 40px;
-}
-
-.calendar-image {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-.calendar-image img {
-    max-width: 100%;
-    height: auto;
-}
-
-.section-title {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 30px;
-    line-height: 1.2;
-}
-
-.feature-subtitle {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-.feature-list {
-    list-style-type: none;
-}
-
-.feature-list li {
-    position: relative;
-    padding-left: 24px;
-    margin-bottom: 16px;
-    font-size: 16px;
-    color: #444;
-}
-
-.feature-list li::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: #007bff;
-    font-weight: bold;
-}
-
-/* Testimonials Section Styles */
-.testimonials-section {
-    padding: 80px 40px;
-    background-color: #f8f9fa;
-    text-align: center;
-}
-
-.highlight {
-    color: #007bff;
-}
-
-.read-stories-btn {
-    background-color: transparent;
-    border: 1px solid #007bff;
-    color: #007bff;
-    padding: 8px 20px;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 40px;
-    transition: all 0.2s;
-}
-
-.read-stories-btn:hover {
-    background-color: rgba(0, 123, 255, 0.1);
-}
-
-.testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.testimonial-card {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 24px;
-    text-align: left;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.testimonial-title {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 12px;
-}
-
-.testimonial-text {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 20px;
-}
-
-.testimonial-author {
-    display: flex;
-    align-items: center;
-}
-
-.author-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 12px;
-}
-
-.author-avatar.blue {
-    background-color: #007bff;
-}
-
-.author-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.author-name {
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.author-position {
-    font-size: 12px;
-    color: #666;
-}
-
-/* Integrations Section Styles */
-.integrations-section {
-    padding: 80px 40px;
-    background-color: #fff;
-}
-
-.integrations-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 30px;
-    max-width: 1200px;
-    margin: 40px auto 0;
-}
-
-.integration-card {
-    padding: 20px;
-    border-radius: 8px;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.integration-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.integration-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    background-color: #eee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.integration-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.integration-desc {
-    font-size: 14px;
-    color: #666;
-}
-
-/* Footer Styles */
-.footer {
-    background-color: #f8f9fa;
-    padding: 60px 40px 20px;
-    border-top: 1px solid #eee;
-}
-
-.footer-top {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 40px;
-    flex-wrap: wrap;
-}
-
-.footer-login {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 30px;
-}
-
-.login-btn {
-    background-color: transparent;
-    border: 1px solid #ccc;
-    color: #444;
-    padding: 8px 20px;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none; /* Added for Link compatibility */
-}
-
-.footer-signup {
-    font-size: 14px;
-}
-
-.footer-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 60px;
-}
-
-.footer-column {
-    min-width: 160px;
-}
-
-.footer-heading {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 16px;
-}
-
-.footer-list {
-    list-style-type: none;
-}
-
-.footer-list li {
-    margin-bottom: 10px;
-}
-
-.footer-list a {
-    color: #555;
-    text-decoration: none;
-    font-size: 14px;
-    transition: color 0.2s;
-}
-
-.footer-list a:hover {
-    color: #007bff;
-}
-
-.footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.copyright {
-    font-size: 12px;
-    color: #777;
-    max-width: 700px;
-}
-
-.social-links {
-    display: flex;
-    gap: 16px;
-}
-
-.social-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: #ddd;
-    display: block;
-}
-
-/* Responsive Styles */
-@media (max-width: 1024px) {
-    .calendar-section {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .calendar-content {
-        padding-right: 0;
-        margin-bottom: 40px;
-        max-width: 100%;
-    }
-    
-    .feature-list {
-        display: inline-block;
-        text-align: left;
-    }
-}
-
-@media (max-width: 768px) {
-    .hero-title {
-        font-size: 36px;
-    }
-    
-    .header {
-        padding: 20px;
-    }
-    
-    .footer-top {
-        flex-direction: column;
-    }
-    
-    .footer-links {
-        flex-direction: column;
-        gap: 30px;
-    }
-    
-    .footer-bottom {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .social-links {
-        justify-content: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero-title {
-        font-size: 28px;
-    }
-    
-    .features-title, .section-title {
-        font-size: 24px;
-    }
-    
-    .testimonials-grid, .integrations-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Global styles moved here for simplicity */
-* {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-body {
-    background-color: #f8f9fa;
-    color: #222;
-    line-height: 1.6;
-}
+  }
+  
+  .landing-logo {
+    height: 40px;
+    object-fit: contain;
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .overlay-login-btn,
+  .overlay-signup-btn {
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  
+  .overlay-login-btn {
+    color: #007bff;
+    border: 1px solid #007bff;
+  }
+  
+  .overlay-signup-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+  }
+  
+  .landing-page-content {
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+  
+  .landing-title {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    color: #000;
+  }
+  
+  .landing-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .main-signup-btn {
+    display: inline-block;
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  
+  .full-page-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    object-position: center top;
+  }
+  
+  @media (max-width: 768px) {
+    .landing-page-header {
+      padding: 10px 20px;
+    }
+  
+    .landing-logo {
+      height: 30px;
+    }
+  
+    .landing-title {
+      font-size: 2rem;
+    }
+  
+    .landing-subtitle {
+      font-size: 1rem;
+    }
+  }

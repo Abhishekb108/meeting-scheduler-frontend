@@ -1,6 +1,5 @@
-// meeting-scheduler-frontend/src/pages/DashboardPage.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; // Added useLocation
+import { useNavigate, useLocation } from 'react-router-dom';
 import API from '../api';
 import '../styles/DashboardPage.css';
 
@@ -9,7 +8,9 @@ function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const location = useLocation(); // To determine the current route for active link styling
+  const location = useLocation();
+  const [userName, setUserName] = useState(null); // Initially null to avoid flash
+  const [showSignOut, setShowSignOut] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -28,6 +29,13 @@ function DashboardPage() {
         });
 
         setEvents(response.data.meetings || []);
+
+        const userResponse = await API.get('/user', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserName(userResponse.data.user.username || 'User');
       } catch (err) {
         console.log('Error fetching events:', err);
         setError(err.response?.data?.message || 'Failed to fetch events.');
@@ -41,6 +49,40 @@ function DashboardPage() {
 
   const handleCreateNewEvent = () => {
     navigate('/create-event');
+  };
+
+  const handleCopyLink = (link) => {
+    navigator.clipboard.writeText(link);
+    alert('Link copied to clipboard!');
+  };
+
+  const handleDeleteEvent = async (eventId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await API.delete(`/meetings/${eventId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setEvents((prevEvents) => prevEvents.filter((event) => event._id !== eventId));
+    } catch (err) {
+      console.log('Error deleting event:', err);
+      setError(err.response?.data?.message || 'Failed to delete event.');
+    }
+  };
+
+  const handleEditEvent = (eventId) => {
+    navigate('/create-event', { state: { editEventId: eventId } });
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const toggleSignOut = () => {
+    setShowSignOut((prev) => !prev);
   };
 
   const formatDateTime = (dateTime) => {
@@ -70,11 +112,14 @@ function DashboardPage() {
           </div>
           <div
             className={`nav-item ${location.pathname === '/booking' ? 'active' : ''}`}
-            onClick={() => navigate('/booking')} // Added navigation to /booking
+            onClick={() => navigate('/booking')}
           >
             <span>Booking</span>
           </div>
-          <div className="nav-item">
+          <div
+            className={`nav-item ${location.pathname === '/availability' ? 'active' : ''}`}
+            onClick={() => navigate('/availability')}
+          >
             <span>Availability</span>
           </div>
           <div
@@ -83,10 +128,21 @@ function DashboardPage() {
           >
             <span>Settings</span>
           </div>
+          <button className="create-btn" onClick={handleCreateNewEvent}>
+            + Create
+          </button>
         </nav>
-        <button className="create-btn" onClick={handleCreateNewEvent}>
-          + Create
-        </button>
+        {userName && (
+          <div className="profile-badge" onClick={toggleSignOut}>
+            <img src="/boy.png" alt="User" />
+            <span>{userName}</span>
+            {showSignOut && (
+              <div className="signout-dropdown">
+                <button onClick={handleSignOut}>Sign Out</button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="main-content">
@@ -109,31 +165,36 @@ function DashboardPage() {
           {!loading && !error && events.length > 0 && (
             <div className="event-list">
               {events.map((event) => (
-                <div key={event._id} className="event-card">
-                  <div
-                    className="event-banner"
-                    style={{ backgroundColor: event.backgroundColor || '#000000' }}
-                  >
-                    <div className="event-avatar">
-                      <img src="/man.png" alt="User Avatar" />
-                    </div>
-                    <h3 className="event-title">{event.title}</h3>
-                  </div>
+                <div
+                  key={event._id}
+                  className={`event-card ${event.status === 'Accepted' ? 'event-active' : 'event-inactive'}`}
+                >
                   <div className="event-details">
+                    <p><strong>Title:</strong> {event.title}</p>
                     <p><strong>Date & Time:</strong> {formatDateTime(event.dateTime)}</p>
                     <p><strong>Link:</strong> <a href={event.link} target="_blank" rel="noopener noreferrer">{event.link}</a></p>
                     <p><strong>Participants:</strong> {event.emails?.length > 0 ? event.emails.join(', ') : 'None'}</p>
+                  </div>
+                  <div className="event-actions">
+                    <label className="switch">
+                      <input type="checkbox" defaultChecked={event.status === 'Accepted'} />
+                      <span className="slider round"></span>
+                    </label>
+                    <button className="copy-btn" onClick={() => handleCopyLink(event.link)}>
+                      <i className="fas fa-copy"></i>
+                    </button>
+                    <button className="edit-btn" onClick={() => handleEditEvent(event._id)}>
+                      <i className="fas fa-edit"></i>
+                    </button>
+                    <button className="delete-btn" onClick={() => handleDeleteEvent(event._id)}>
+                      <i className="fas fa-trash"></i>
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </div>
-      </div>
-
-      <div className="user-profile">
-        <img src="/man.png" alt="User" />
-        <span>sarthak pal</span>
       </div>
     </div>
   );

@@ -1,21 +1,23 @@
-// meeting-scheduler-frontend/src/pages/BookingPage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api';
 import '../styles/BookingPage.css';
+import axios from 'axios';
 
 function BookingPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Upcoming');
-  const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [meetings, setMeetings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState(null); // Initially null to avoid flash
+  const [hoveredMeeting, setHoveredMeeting] = useState(null);
+  const [selectedMeeting, setSelectedMeeting] = useState(null);
+  const [showSignOut, setShowSignOut] = useState(false);
 
   const tabs = ['Upcoming', 'Pending', 'Canceled', 'Past'];
 
-  // Fetch user email and bookings on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,16 +28,15 @@ function BookingPage() {
           return;
         }
 
-        // Fetch user details to get email
         const userResponse = await API.get('/user', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setUserEmail(userResponse.data.user.email);
+        setUserName(userResponse.data.user.username || 'User');
 
-        // Fetch bookings
-        const response = await API.get('/meetings/bookings', {
+        const response = await axios.get('http://localhost:5000/api/meetings/bookings', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -53,14 +54,13 @@ function BookingPage() {
     fetchData();
   }, [navigate]);
 
-  // Filter meetings into tabs
   const filterMeetings = () => {
     const now = new Date();
     return {
-      Upcoming: meetings.filter(meeting => new Date(meeting.dateTime) > now),
-      Pending: meetings.filter(meeting => meeting.status === 'Pending'),
-      Canceled: meetings.filter(meeting => meeting.status === 'Rejected'),
-      Past: meetings.filter(meeting => new Date(meeting.dateTime) < now),
+      Upcoming: meetings.filter((meeting) => meeting.status === 'Accepted' && new Date(meeting.dateTime) > now),
+      Pending: meetings.filter((meeting) => meeting.status === 'Pending'),
+      Canceled: meetings.filter((meeting) => meeting.status === 'Rejected'),
+      Past: meetings.filter((meeting) => meeting.status === 'Accepted' && new Date(meeting.dateTime) < now),
     };
   };
 
@@ -68,14 +68,63 @@ function BookingPage() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    setSelectedMeeting(null); // Close participant modal when changing tabs
+    setSelectedMeeting(null);
   };
 
-  const handleMeetingSelect = (meeting) => {
-    setSelectedMeeting(meeting);
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
-  const handleStatusUpdate = async (meetingId, status) => {
+  const toggleSignOut = () => {
+    setShowSignOut((prev) => !prev);
+  };
+
+  const formatDateTime = (dateTime) => {
+    const date = new Date(dateTime);
+    const dateStr = date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'short',
+    });
+    const timeStart = date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+    const endDate = new Date(date);
+    endDate.setHours(date.getHours() + 1);
+    const timeEnd = endDate.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+    return {
+      date: dateStr.split(',')[0],
+      dayMonth: `${date.getDate()} ${date.toLocaleString('en-US', { month: 'short' })}`,
+      fullDate: dateStr,
+      timeRange: `${timeStart} - ${timeEnd}`,
+      timeStart: timeStart,
+    };
+  };
+
+  const getParticipantsSummary = (emails) => {
+    if (!emails || emails.length === 0) return 'No participants';
+    const otherParticipants = emails.filter((email) => email !== userEmail);
+    if (otherParticipants.length === 0) return 'You';
+    if (otherParticipants.length === 1) return `You and ${otherParticipants[0]}`;
+    return `You and team ${otherParticipants.length}`;
+  };
+
+  const handleMeetingClick = (meeting) => {
+    setSelectedMeeting(selectedMeeting && selectedMeeting._id === meeting._id ? null : meeting);
+  };
+
+  const handleAcceptReject = async (action, e, meetingId) => {
+    e.stopPropagation();
+    const meeting = meetings.find((m) => m._id === meetingId);
+    if (!meeting) return;
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -84,9 +133,19 @@ function BookingPage() {
         return;
       }
 
-      await API.put(
-        `/meetings/${meetingId}/status`,
-        { status },
+      let newStatus = action === 'accept' ? 'Accepted' : 'Rejected';
+      let acceptedParticipants = meeting.acceptedParticipants || [];
+
+      if (action === 'accept' && !acceptedParticipants.includes(userEmail)) {
+        acceptedParticipants.push(userEmail);
+      }
+
+      await axios.put(
+        `http://localhost:5000/api/meetings/${meeting._id}/status`,
+        {
+          status: newStatus,
+          acceptedParticipants,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -94,53 +153,19 @@ function BookingPage() {
         }
       );
 
-      // Update local state
-      setMeetings(meetings.map(meeting => {
-        if (meeting._id === meetingId) {
-          const updatedMeeting = { ...meeting, status };
-          if (status === 'Accepted') {
-            if (!updatedMeeting.acceptedParticipants.includes(userEmail)) {
-              updatedMeeting.acceptedParticipants.push(userEmail);
-            }
-          } else if (status === 'Rejected') {
-            updatedMeeting.acceptedParticipants = updatedMeeting.acceptedParticipants.filter(
-              email => email !== userEmail
-            );
-          }
-          return updatedMeeting;
-        }
-        return meeting;
-      }));
+      setMeetings((prevMeetings) =>
+        prevMeetings.map((m) =>
+          m._id === meeting._id
+            ? { ...m, status: newStatus, acceptedParticipants }
+            : m
+        )
+      );
 
-      setSelectedMeeting(null); // Close participant modal after action
+      setSelectedMeeting(null); // Reset selection after action
     } catch (err) {
-      console.log('Error updating status:', err);
-      setError(err.response?.data?.message || 'Failed to update status.');
+      console.log(`Error ${action}ing meeting:`, err);
+      setError(err.response?.data?.message || `Failed to ${action} meeting.`);
     }
-  };
-
-  const formatDateTime = (dateTime) => {
-    const date = new Date(dateTime);
-    return {
-      date: date.toLocaleString('en-US', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'short',
-      }),
-      time: date.toLocaleString('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-      }),
-    };
-  };
-
-  const getParticipantsSummary = (emails) => {
-    if (!emails || emails.length === 0) return 'No participants';
-    const otherParticipants = emails.filter(email => email !== userEmail);
-    if (otherParticipants.length === 0) return 'You';
-    if (otherParticipants.length === 1) return `You and ${otherParticipants[0]}`;
-    return `You and team ${otherParticipants.length}`;
   };
 
   return (
@@ -156,17 +181,24 @@ function BookingPage() {
           <div className="nav-item active">
             Booking
           </div>
-          <div className="nav-item">
+          <div className="nav-item" onClick={() => navigate('/availability')}>
             Availability
           </div>
           <div className="nav-item" onClick={() => navigate('/settings')}>
             Settings
           </div>
         </nav>
-        <div className="profile-badge">
-          <img src="/man.png" alt="Profile" />
-          <span>sarthak pal</span>
-        </div>
+        {userName && (
+          <div className="profile-badge" onClick={toggleSignOut}>
+            <img src="/boy.png" alt="Profile" />
+            <span>{userName}</span>
+            {showSignOut && (
+              <div className="signout-dropdown">
+                <button onClick={handleSignOut}>Sign Out</button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="booking-content">
@@ -177,7 +209,7 @@ function BookingPage() {
         {loading && <p>Loading bookings...</p>}
 
         <div className="booking-tabs">
-          {tabs.map(tab => (
+          {tabs.map((tab) => (
             <button
               key={tab}
               className={activeTab === tab ? 'active' : ''}
@@ -190,97 +222,150 @@ function BookingPage() {
 
         <div className="meetings-list">
           {!loading && filteredMeetings[activeTab].length === 0 && (
-            <p>No bookings in this category.</p>
+            <p className="no-meetings">No bookings in this category.</p>
           )}
+
           {!loading &&
-            filteredMeetings[activeTab].map(meeting => {
-              const { date, time } = formatDateTime(meeting.dateTime);
+            filteredMeetings[activeTab].map((meeting) => {
+              const { date, dayMonth, timeRange, timeStart } = formatDateTime(meeting.dateTime);
+              const isSelected = selectedMeeting && selectedMeeting._id === meeting._id;
+              const isHovered = hoveredMeeting === meeting._id;
+
               return (
                 <div
                   key={meeting._id}
-                  className="meeting-item"
-                  onClick={() => handleMeetingSelect(meeting)}
+                  className={`meeting-item ${isSelected ? 'selected' : ''}`}
+                  onClick={() => handleMeetingClick(meeting)}
+                  onMouseEnter={() => setHoveredMeeting(meeting._id)}
+                  onMouseLeave={() => setHoveredMeeting(null)}
                 >
-                  <div className="meeting-date">{date}</div>
-                  <div className="meeting-time">{time}</div>
-                  <div className="meeting-title">{meeting.title}</div>
-                  <div className="meeting-details">
-                    <span>{getParticipantsSummary(meeting.emails)}</span>
-                    <div className="meeting-actions">
-                      {meeting.emails && (
-                        <span className="meeting-participants">
-                          👥 {meeting.emails.length} people
-                        </span>
-                      )}
-                      {meeting.status === 'Pending' ? (
-                        <>
+                  <div className="meeting-row">
+                    <div className="meeting-date-column">
+                      <div className="meeting-day">{date}</div>
+                      <div className="meeting-day-month">{dayMonth}</div>
+                      <div className="meeting-time">{timeStart}</div>
+                    </div>
+
+                    <div className="meeting-details-column">
+                      <div className="meeting-title">{meeting.title}</div>
+                      <div className="meeting-participants">{getParticipantsSummary(meeting.emails)}</div>
+                    </div>
+
+                    <div className="meeting-actions-column">
+                      <div className="meeting-people">
+                        <span className="people-icon">👥</span> {meeting.emails?.length || 0} people
+                      </div>
+
+                      {activeTab === 'Pending' ? (
+                        <div className="action-buttons">
                           <button
                             className="reject-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusUpdate(meeting._id, 'Rejected');
-                            }}
+                            onClick={(e) => handleAcceptReject('reject', e, meeting._id)}
                           >
                             Reject
                           </button>
                           <button
                             className="accept-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusUpdate(meeting._id, 'Accepted');
-                            }}
+                            onClick={(e) => handleAcceptReject('accept', e, meeting._id)}
                           >
                             Accept
                           </button>
-                        </>
+                        </div>
                       ) : (
-                        <span className={`meeting-status ${meeting.status.toLowerCase()}`}>
+                        <div
+                          className={`meeting-status ${meeting.status === 'Rejected' ? 'rejected' : 'accepted'}`}
+                        >
                           {meeting.status}
-                        </span>
+                        </div>
                       )}
                     </div>
                   </div>
+
+                  {isHovered && (
+                    <div className="participants-panel hover-panel">
+                      <div className="participants-header">
+                        <h3>Participant ({meeting.emails?.length || 0})</h3>
+                        {activeTab === 'Pending' && (
+                          <div className="action-buttons">
+                            <button
+                              className="reject-btn"
+                              onClick={(e) => handleAcceptReject('reject', e, meeting._id)}
+                            >
+                              Reject
+                            </button>
+                            <button
+                              className="accept-btn"
+                              onClick={(e) => handleAcceptReject('accept', e, meeting._id)}
+                            >
+                              Accept
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="participants-list">
+                        {meeting.emails?.map((email, index) => (
+                          <div key={index} className="participant-item">
+                            <div className="participant-img-name">
+                              <div className="participant-img">
+                                {email.charAt(0).toUpperCase()}
+                              </div>
+                              <span>{email}</span>
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={meeting.acceptedParticipants?.includes(email) || false}
+                              readOnly
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {isSelected && (
+                    <div className="participants-panel">
+                      <div className="participants-header">
+                        <h3>Participant ({meeting.emails?.length || 0})</h3>
+                        {activeTab === 'Pending' && (
+                          <div className="action-buttons">
+                            <button
+                              className="reject-btn"
+                              onClick={(e) => handleAcceptReject('reject', e, meeting._id)}
+                            >
+                              Reject
+                            </button>
+                            <button
+                              className="accept-btn"
+                              onClick={(e) => handleAcceptReject('accept', e, meeting._id)}
+                            >
+                              Accept
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="participants-list">
+                        {meeting.emails?.map((email, index) => (
+                          <div key={index} className="participant-item">
+                            <div className="participant-img-name">
+                              <div className="participant-img">
+                                {email.charAt(0).toUpperCase()}
+                              </div>
+                              <span>{email}</span>
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={meeting.acceptedParticipants?.includes(email) || false}
+                              readOnly
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
         </div>
-
-        {selectedMeeting && (
-          <div className="participants-modal">
-            <div className="participants-header">
-              <h2>Participant ({selectedMeeting.emails.length})</h2>
-              {selectedMeeting.status === 'Pending' && (
-                <div className="participant-actions">
-                  <button
-                    className="reject-btn"
-                    onClick={() => handleStatusUpdate(selectedMeeting._id, 'Rejected')}
-                  >
-                    Reject
-                  </button>
-                  <button
-                    className="accept-btn"
-                    onClick={() => handleStatusUpdate(selectedMeeting._id, 'Accepted')}
-                  >
-                    Accept
-                  </button>
-                </div>
-              )}
-            </div>
-            <div className="participants-list">
-              {selectedMeeting.emails.map((email, index) => (
-                <div key={index} className="participant-item">
-                  <img src="/man.png" alt="Participant" />
-                  <span>{email}</span>
-                  <input
-                    type="checkbox"
-                    checked={selectedMeeting.acceptedParticipants.includes(email)}
-                    readOnly
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
