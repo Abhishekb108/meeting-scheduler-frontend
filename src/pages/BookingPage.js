@@ -36,7 +36,7 @@ function BookingPage() {
         setUserEmail(userResponse.data.user.email);
         setUserName(userResponse.data.user.username || 'User');
 
-        const response = await axios.get('http://localhost:5000/api/meetings/bookings', {
+        const response = await axios.get('https://meeting-scheduler-backend-dwlu.onrender.com/api/meetings/bookings', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
