@@ -1,44 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import API from '../api';
-import '../styles/CreateEventPage.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import API from "../api";
+import "../styles/CreateEventPage.css";
 
 function CreateEventPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
-  const [editEventId, setEditEventId] = useState(location.state?.editEventId || null);
+  const [editEventId, setEditEventId] = useState(
+    location.state?.editEventId || null
+  );
   const [formData, setFormData] = useState({
-    title: '',
-    dateTime: '',
-    duration: '60',
-    type: 'group',
-    password: '',
-    description: '',
+    title: "",
+    dateTime: "",
+    duration: "60",
+    type: "group",
+    password: "",
+    description: "",
   });
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState("");
   const [existingMeetings, setExistingMeetings] = useState([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
-          setError('You are not authenticated. Please log in again.');
-          navigate('/login');
+          setError("You are not authenticated. Please log in again.");
+          navigate("/login");
           return;
         }
 
-        const userResponse = await API.get('/user', {
+        const userResponse = await API.get("/user", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setUserName(userResponse.data.user.username || 'User');
+        setUserName(userResponse.data.user.username || "User");
 
-        const meetingsResponse = await API.get('/meetings', {
+        const meetingsResponse = await API.get("/meetings", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -55,18 +57,20 @@ function CreateEventPage() {
           const event = eventResponse.data.meeting;
           if (event) {
             setFormData({
-              title: event.title || '',
-              dateTime: event.dateTime ? new Date(event.dateTime).toISOString().slice(0, 16) : '',
-              duration: '60',
-              type: 'group',
-              password: event.password || '',
-              description: event.description || '',
+              title: event.title || "",
+              dateTime: event.dateTime
+                ? new Date(event.dateTime).toISOString().slice(0, 16)
+                : "",
+              duration: "60",
+              type: "group",
+              password: event.password || "",
+              description: event.description || "",
             });
           }
         }
       } catch (err) {
-        console.log('Error fetching data:', err);
-        setError(err.response?.data?.message || 'Failed to fetch data.');
+        console.log("Error fetching data:", err);
+        setError(err.response?.data?.message || "Failed to fetch data.");
       }
     };
 
@@ -83,7 +87,9 @@ function CreateEventPage() {
 
   const checkForConflict = () => {
     const newMeetingStart = new Date(formData.dateTime);
-    const newMeetingEnd = new Date(newMeetingStart.getTime() + parseInt(formData.duration) * 60 * 1000);
+    const newMeetingEnd = new Date(
+      newMeetingStart.getTime() + parseInt(formData.duration) * 60 * 1000
+    );
 
     return existingMeetings.some((meeting) => {
       if (isEditing && meeting._id === id) return false;
@@ -97,29 +103,69 @@ function CreateEventPage() {
     });
   };
 
+  const handleSaveAvailability = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!formData.dateTime) {
+      alert("Please select a date and time.");
+      return;
+    }
+  
+    // Convert datetime-local input to a Date object
+    const selectedDate = new Date(formData.dateTime);
+  
+    // Extract day, startTime, and endTime
+    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const day = daysOfWeek[selectedDate.getDay()]; // Get day as 'Mon', 'Tue', etc.
+    
+    // Format time as HH:MM (24-hour format)
+    const startTime = selectedDate.toTimeString().slice(0, 5); // Extract HH:MM
+    const endTime = "18:00"; // Set a default end time or allow user input
+  
+    // Send API request
+    try {
+      const response = await API.post(
+        "/availability",
+        {
+          slots: [{ day, startTime, endTime }],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      console.log("Availability saved:", response.data);
+    } catch (error) {
+      console.error("Error saving availability:", error);
+    }
+  };
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!formData.title || formData.title.trim().length < 3) {
-      setError('Event title is required and must be at least 3 characters');
+      setError("Event title is required and must be at least 3 characters");
       return;
     }
     if (!formData.dateTime) {
-      setError('Date and time are required');
+      setError("Date and time are required");
       return;
     }
 
     if (checkForConflict()) {
-      setError('This time slot conflicts with an existing meeting.');
+      setError("This time slot conflicts with an existing meeting.");
       return;
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        setError('You are not authenticated. Please log in again.');
-        navigate('/login');
+        setError("You are not authenticated. Please log in again.");
+        navigate("/login");
         return;
       }
 
@@ -141,14 +187,14 @@ function CreateEventPage() {
         navigate(`/event-link/${id}`, { state: { userName } });
       } else {
         const response = await API.post(
-          '/meetings',
+          "/meetings",
           {
             title: formData.title,
             dateTime: formData.dateTime,
             description: formData.description,
             link: `https://cnnct.com/meeting/${Date.now()}`,
-            status: 'accepted',
-            category: 'upcoming',
+            status: "accepted",
+            category: "upcoming",
             password: formData.password,
           },
           {
@@ -157,18 +203,23 @@ function CreateEventPage() {
             },
           }
         );
-        navigate(`/event-link/${response.data.meeting._id}`, { state: { userName, editEventId } });
+        // handleSaveAvailability()
+        navigate(`/event-link/${response.data.meeting._id}`, {
+          state: { userName, editEventId },
+        });
       }
     } catch (err) {
-      console.log('Error saving event:', err);
-      setError(err.response?.data?.message || 'Failed to save event. Please try again.');
+      console.log("Error saving event:", err);
+      setError(
+        err.response?.data?.message || "Failed to save event. Please try again."
+      );
     }
   };
 
   return (
     <div className="create-event-container">
       <div className="create-event-card">
-        <h2>{isEditing ? 'Edit Event' : 'Add Event'}</h2>
+        <h2>{isEditing ? "Edit Event" : "Add Event"}</h2>
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -246,10 +297,16 @@ function CreateEventPage() {
             </select>
           </div>
           <div className="form-actions">
-            <button type="button" className="cancel-btn" onClick={() => navigate('/dashboard', { state: { userName } })}>
+            <button
+              type="button"
+              className="cancel-btn"
+              onClick={() => navigate("/dashboard", { state: { userName } })}
+            >
               Cancel
             </button>
-            <button type="submit" className="save-btn">Save</button>
+            <button type="submit" className="save-btn">
+              Save
+            </button>
           </div>
         </form>
       </div>

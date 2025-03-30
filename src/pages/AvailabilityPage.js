@@ -1,74 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import API from '../api';
-import '../styles/AvailabilityPage.css';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "../api";
+import "../styles/AvailabilityPage.css";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
 const localizer = momentLocalizer(moment);
 
 function AvailabilityPage() {
   const navigate = useNavigate();
-  const [activeView, setActiveView] = useState('Availability');
+  const [activeView, setActiveView] = useState("Availability");
   const [availabilitySlots, setAvailabilitySlots] = useState({
     Sun: { available: false, slots: [] },
-    Mon: { available: true, slots: [{ startTime: '', endTime: '' }] },
-    Tue: { available: true, slots: [{ startTime: '', endTime: '' }] },
-    Wed: { available: true, slots: [{ startTime: '', endTime: '' }] },
-    Thu: { available: true, slots: [{ startTime: '', endTime: '' }] },
-    Fri: { available: true, slots: [{ startTime: '', endTime: '' }] },
-    Sat: { available: true, slots: [{ startTime: '', endTime: '' }] },
+    Mon: { available: false, slots: [] },
+    Tue: { available: false, slots: [] },
+    Wed: { available: false, slots: [] },
+    Thu: { available: false, slots: [] },
+    Fri: { available: false, slots: [] },
+    Sat: { available: false, slots: [] },
   });
-  const [calendarView, setCalendarView] = useState('week');
+  const [calendarView, setCalendarView] = useState("week");
   const [events, setEvents] = useState([]);
-  const [error, setError] = useState('');
-  const [activity, setActivity] = useState('Event type');
-  const [timeZone, setTimeZone] = useState('Indian Standard Time');
-  const [userName, setUserName] = useState(null); // Initially null to avoid flash
+  const [error, setError] = useState("");
+  const [activity, setActivity] = useState("Event type");
+  const [timeZone, setTimeZone] = useState("Indian Standard Time");
+  const [userName, setUserName] = useState(null);
   const [showSignOut, setShowSignOut] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
-          navigate('/login');
+          navigate("/login");
           return;
         }
 
-        const userResponse = await API.get('/user', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const userResponse = await API.get("/user", {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setUserName(userResponse.data.user.username || 'User');
+        setUserName(userResponse.data.user.username || "User");
 
-        const availabilityResponse = await API.get('/availability', {
+        const availabilityResponse = await API.get("/availability", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (availabilityResponse.data.slots && availabilityResponse.data.slots.length > 0) {
-          const newAvailability = { ...availabilitySlots };
+        const newAvailability = {
+          Sun: { available: false, slots: [] },
+          Mon: { available: false, slots: [] },
+          Tue: { available: false, slots: [] },
+          Wed: { available: false, slots: [] },
+          Thu: { available: false, slots: [] },
+          Fri: { available: false, slots: [] },
+          Sat: { available: false, slots: [] },
+        };
+
+        if (availabilityResponse.data.slots?.length > 0) {
           availabilityResponse.data.slots.forEach((slot) => {
             if (newAvailability[slot.day]) {
-              newAvailability[slot.day].slots = [
-                ...newAvailability[slot.day].slots,
-                { startTime: slot.startTime, endTime: slot.endTime },
-              ];
+              newAvailability[slot.day].slots.push({
+                startTime: slot.startTime,
+                endTime: slot.endTime,
+              });
               newAvailability[slot.day].available = true;
             }
           });
-          setAvailabilitySlots(newAvailability);
         }
 
-        const eventsResponse = await API.get('/meetings/bookings', {
+        setAvailabilitySlots(newAvailability);
+
+        const eventsResponse = await API.get("/meetings/bookings", {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         setEvents(eventsResponse.data.meetings || []);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to fetch data');
+        setError(err.response?.data?.message || "Failed to fetch data");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -81,7 +91,7 @@ function AvailabilityPage() {
       [day]: {
         ...prev[day],
         available: !prev[day].available,
-        slots: !prev[day].available ? [{ startTime: '', endTime: '' }] : [],
+        slots: !prev[day].available ? [{ startTime: "", endTime: "" }] : [],
       },
     }));
   };
@@ -91,7 +101,7 @@ function AvailabilityPage() {
       ...prev,
       [day]: {
         ...prev[day],
-        slots: [...prev[day].slots, { startTime: '', endTime: '' }],
+        slots: [...prev[day].slots, { startTime: "", endTime: "" }],
       },
     }));
   };
@@ -122,12 +132,12 @@ function AvailabilityPage() {
   const validateSlots = (slots) => {
     for (const slot of slots) {
       if (!slot.startTime || !slot.endTime) {
-        return 'Start and end times are required for all slots.';
+        return "Start and end times are required for all slots.";
       }
-      const start = moment(slot.startTime, 'HH:mm');
-      const end = moment(slot.endTime, 'HH:mm');
+      const start = moment(slot.startTime, "HH:mm");
+      const end = moment(slot.endTime, "HH:mm");
       if (end.isSameOrBefore(start)) {
-        return 'End time must be after start time.';
+        return "End time must be after start time.";
       }
     }
     return null;
@@ -135,13 +145,18 @@ function AvailabilityPage() {
 
   const saveAvailability = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const slotsToSave = [];
+      
       Object.keys(availabilitySlots).forEach((day) => {
         if (availabilitySlots[day].available) {
           availabilitySlots[day].slots.forEach((slot) => {
             if (slot.startTime && slot.endTime) {
-              slotsToSave.push({ day, startTime: slot.startTime, endTime: slot.endTime });
+              slotsToSave.push({
+                day,
+                startTime: slot.startTime,
+                endTime: slot.endTime,
+              });
             }
           });
         }
@@ -154,38 +169,84 @@ function AvailabilityPage() {
       }
 
       await API.post(
-        '/availability',
+        "/availability",
         { slots: slotsToSave },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setError('');
-      alert('Availability updated successfully');
+      
+      setError("");
+      alert("Availability updated successfully");
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save availability');
+      setError(err.response?.data?.message || "Failed to save availability");
     }
   };
 
   const renderCalendarEvents = () => {
-    return events.map((event) => {
+    const availabilityEvents = [];
+    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const currentDate = moment();
+    
+    // Show availability for current week and next 3 weeks
+    for (let weekOffset = 0; weekOffset < 4; weekOffset++) {
+      const weekStart = moment().startOf('week').add(weekOffset, 'weeks');
+      
+      daysOfWeek.forEach((day, dayIndex) => {
+        if (availabilitySlots[day].available) {
+          availabilitySlots[day].slots.forEach(slot => {
+            if (slot.startTime && slot.endTime) {
+              const [startHours, startMinutes] = slot.startTime.split(':').map(Number);
+              const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
+              
+              const startDate = weekStart.clone()
+                .add(dayIndex, 'days')
+                .set({ hour: startHours, minute: startMinutes, second: 0 })
+                .toDate();
+                
+              const endDate = weekStart.clone()
+                .add(dayIndex, 'days')
+                .set({ hour: endHours, minute: endMinutes, second: 0 })
+                .toDate();
+              
+              availabilityEvents.push({
+                title: "Available",
+                start: startDate,
+                end: endDate,
+                className: "event-available",
+                allDay: false
+              });
+            }
+          });
+        }
+      });
+    }
+
+    const bookedEvents = events.map((event) => {
       const date = new Date(event.dateTime);
-      const status = event.status === 'Accepted' ? 'accepted' : 'rejected';
+      const status = event.status === "Accepted" ? "accepted" : "rejected";
       return {
         title: event.title,
         start: date,
         end: new Date(date.getTime() + 60 * 60 * 1000),
         className: `event-${status}`,
+        allDay: false
       };
     });
+
+    return [...availabilityEvents, ...bookedEvents];
   };
 
   const handleSignOut = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   const toggleSignOut = () => {
     setShowSignOut((prev) => !prev);
   };
+
+  if (isLoading) {
+    return <div className="loading">Loading...</div>;
+  }
 
   return (
     <div className="availability-container">
@@ -194,16 +255,14 @@ function AvailabilityPage() {
           <img src="/logo.png" alt="CNNCT Logo" />
         </div>
         <nav className="sidebar-nav">
-          <div className="nav-item" onClick={() => navigate('/dashboard')}>
+          <div className="nav-item" onClick={() => navigate("/dashboard")}>
             Events
           </div>
-          <div className="nav-item" onClick={() => navigate('/booking')}>
+          <div className="nav-item" onClick={() => navigate("/booking")}>
             Booking
           </div>
-          <div className="nav-item active">
-            Availability
-          </div>
-          <div className="nav-item" onClick={() => navigate('/settings')}>
+          <div className="nav-item active">Availability</div>
+          <div className="nav-item" onClick={() => navigate("/settings")}>
             Settings
           </div>
         </nav>
@@ -226,26 +285,32 @@ function AvailabilityPage() {
 
         <div className="availability-tabs">
           <button
-            className={activeView === 'Availability' ? 'active' : ''}
-            onClick={() => setActiveView('Availability')}
+            className={activeView === "Availability" ? "active" : ""}
+            onClick={() => setActiveView("Availability")}
           >
             Availability
           </button>
           <button
-            className={activeView === 'Calendar View' ? 'active' : ''}
-            onClick={() => setActiveView('Calendar View')}
+            className={activeView === "Calendar View" ? "active" : ""}
+            onClick={() => setActiveView("Calendar View")}
           >
             Calendar View
           </button>
         </div>
 
         <div className="availability-controls">
-          <select value={activity} onChange={(e) => setActivity(e.target.value)}>
+          <select
+            value={activity}
+            onChange={(e) => setActivity(e.target.value)}
+          >
             <option>Event type</option>
             <option>Meeting</option>
             <option>Interview</option>
           </select>
-          <select value={timeZone} onChange={(e) => setTimeZone(e.target.value)}>
+          <select
+            value={timeZone}
+            onChange={(e) => setTimeZone(e.target.value)}
+          >
             <option>Indian Standard Time</option>
             <option>UTC</option>
             <option>Pacific Standard Time</option>
@@ -254,7 +319,7 @@ function AvailabilityPage() {
 
         {error && <p className="error-message">{error}</p>}
 
-        {activeView === 'Availability' && (
+        {activeView === "Availability" && (
           <div className="availability-settings">
             {Object.keys(availabilitySlots).map((day) => (
               <div key={day} className="day-section">
@@ -277,7 +342,12 @@ function AvailabilityPage() {
                           type="time"
                           value={slot.startTime}
                           onChange={(e) =>
-                            updateAvailabilitySlot(day, index, 'startTime', e.target.value)
+                            updateAvailabilitySlot(
+                              day,
+                              index,
+                              "startTime",
+                              e.target.value
+                            )
                           }
                         />
                         <span>-</span>
@@ -285,7 +355,12 @@ function AvailabilityPage() {
                           type="time"
                           value={slot.endTime}
                           onChange={(e) =>
-                            updateAvailabilitySlot(day, index, 'endTime', e.target.value)
+                            updateAvailabilitySlot(
+                              day,
+                              index,
+                              "endTime",
+                              e.target.value
+                            )
                           }
                         />
                         <button
@@ -296,7 +371,10 @@ function AvailabilityPage() {
                         </button>
                       </div>
                     ))}
-                    <button className="add-slot-btn" onClick={() => addAvailabilitySlot(day)}>
+                    <button
+                      className="add-slot-btn"
+                      onClick={() => addAvailabilitySlot(day)}
+                    >
                       +
                     </button>
                   </div>
@@ -304,24 +382,37 @@ function AvailabilityPage() {
               </div>
             ))}
             <div className="save-button-container">
-              <button className="save-availability-btn" onClick={saveAvailability}>
+              <button
+                className="save-availability-btn"
+                onClick={saveAvailability}
+              >
                 Save Availability
               </button>
             </div>
           </div>
         )}
 
-        {activeView === 'Calendar View' && (
+        {activeView === "Calendar View" && (
           <div className="calendar-view">
             <div className="calendar-controls">
-              <button onClick={() => setCalendarView('day')}>Day</button>
+              <button 
+                onClick={() => setCalendarView("day")}
+                className={calendarView === "day" ? "active" : ""}
+              >
+                Day
+              </button>
               <button
-                onClick={() => setCalendarView('week')}
-                className={calendarView === 'week' ? 'active' : ''}
+                onClick={() => setCalendarView("week")}
+                className={calendarView === "week" ? "active" : ""}
               >
                 Week
               </button>
-              <button onClick={() => setCalendarView('month')}>Month</button>
+              <button 
+                onClick={() => setCalendarView("month")}
+                className={calendarView === "month" ? "active" : ""}
+              >
+                Month
+              </button>
             </div>
             <div className="calendar-container">
               <Calendar
@@ -329,11 +420,44 @@ function AvailabilityPage() {
                 events={renderCalendarEvents()}
                 startAccessor="start"
                 endAccessor="end"
-                style={{ height: 500 }}
+                style={{ height: 600 }}
                 view={calendarView}
                 onView={setCalendarView}
+                defaultView={calendarView}
                 defaultDate={new Date()}
+                min={new Date(0, 0, 0, 6, 0, 0)} // 6:00 AM
+                max={new Date(0, 0, 0, 22, 0, 0)} // 10:00 PM
+                step={15} // 15 minute increments
+                timeslots={4} // 4 timeslots per hour
+                eventPropGetter={(event) => ({
+                  className: event.className,
+                  style: {
+                    backgroundColor: event.className === "event-available" ? "#e3fcef" : 
+                                    event.className === "event-accepted" ? "#e3fcef" : "#ffebeb",
+                    border: `1px solid ${
+                      event.className === "event-available" ? "#abf5d1" : 
+                      event.className === "event-accepted" ? "#abf5d1" : "#ffbdad"
+                    }`,
+                    borderRadius: '4px',
+                    color: '#000',
+                    opacity: 0.8
+                  }
+                })}
               />
+            </div>
+            <div className="calendar-legend">
+              <div className="legend-item">
+                <div className="legend-color available"></div>
+                <span>Available Slots</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color accepted"></div>
+                <span>Accepted Bookings</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color rejected"></div>
+                <span>Rejected Bookings</span>
+              </div>
             </div>
           </div>
         )}

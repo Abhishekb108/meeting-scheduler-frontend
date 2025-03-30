@@ -1,16 +1,16 @@
 // meeting-scheduler-frontend/src/App.js
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import PreferencesPage from './pages/PreferencesPage';
-import DashboardPage from './pages/DashboardPage';
-import CreateEventPage from './pages/CreateEventPage';
-import EventLinkPage from './pages/EventLinkPage';
-import SettingsPage from './pages/SettingsPage';
-import BookingPage from './pages/BookingPage';
-import AvailabilityPage from './pages/AvailabilityPage'; // Added import
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import PreferencesPage from "./pages/PreferencesPage";
+import DashboardPage from "./pages/DashboardPage";
+import CreateEventPage from "./pages/CreateEventPage";
+import EventLinkPage from "./pages/EventLinkPage";
+import SettingsPage from "./pages/SettingsPage";
+import BookingPage from "./pages/BookingPage";
+import AvailabilityPage from "./pages/AvailabilityPage"; // Added import
 
 function App() {
   return (
@@ -24,7 +24,8 @@ function App() {
       <Route path="/event-link/:id" element={<EventLinkPage />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/booking" element={<BookingPage />} />
-      <Route path="/availability" element={<AvailabilityPage />} /> {/* Added route */}
+      <Route path="/availability" element={<AvailabilityPage />} />{" "}
+      {/* Added route */}
     </Routes>
   );
 }
