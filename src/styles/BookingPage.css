@@ -96,6 +96,7 @@ body {
   padding: 40px;
   background-color: #f4f4f4;
   overflow-y: auto;
+  position: relative;
 }
 
 .booking-content h1 {
@@ -364,4 +365,228 @@ body {
 
 .meeting-item.selected {
   background-color: #F9FAFB;
+}
+
+/* Header for mobile view */
+.header {
+  display: none; /* Hidden by default on desktop */
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .booking-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar {
+    display: none; /* Hide sidebar on mobile */
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header .sidebar-logo img {
+    width: 80px;
+  }
+
+  .header .profile-badge {
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+
+  .header .profile-badge img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .booking-content {
+    padding: 20px;
+    padding-top: 0; /* Adjust for header */
+    padding-bottom: 80px; /* Space for bottom nav */
+  }
+
+  .booking-content h1 {
+    font-size: 20px;
+    margin-top: 20px;
+  }
+
+  .booking-content > p {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .booking-tabs {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-bottom: 15px;
+  }
+
+  .booking-tabs button {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+
+  .meetings-list {
+    border-radius: 8px;
+  }
+
+  .meeting-row {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
+  }
+
+  .meeting-date-column {
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 10px;
+  }
+
+  .meeting-day {
+    font-size: 14px;
+  }
+
+  .meeting-day-month {
+    font-size: 12px;
+  }
+
+  .meeting-time {
+    font-size: 12px;
+  }
+
+  .meeting-details-column {
+    padding-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .meeting-title {
+    font-size: 16px;
+  }
+
+  .meeting-participants {
+    font-size: 12px;
+  }
+
+  .meeting-actions-column {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .meeting-people {
+    font-size: 12px;
+  }
+
+  .action-buttons {
+    gap: 8px;
+  }
+
+  .reject-btn,
+  .accept-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .meeting-status {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .hover-panel {
+    display: none; /* Disable hover panel on mobile */
+  }
+
+  .participants-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .participants-modal-content {
+    background-color: white;
+    width: 90%;
+    max-height: 80%;
+    border-radius: 8px;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+  }
+
+  .modal-action-buttons {
+    display: flex;
+    gap: 10px;
+    padding: 15px;
+    border-top: 1px solid #E5E7EB;
+  }
+
+  .mobile-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    z-index: 100;
+  }
+
+  .mobile-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    color: #6B7280;
+    padding: 5px;
+  }
+
+  .mobile-nav .nav-item.active {
+    color: #2563EB;
+    background-color: transparent;
+  }
+
+  .nav-icon {
+    font-size: 20px;
+    margin-bottom: 5px;
+  }
+}
+
+/* Ensure desktop styles are preserved for larger screens */
+@media (min-width: 769px) {
+  .mobile-nav {
+    display: none; /* Hide mobile nav on desktop */
+  }
+
+  .participants-modal {
+    display: none; /* Hide modal on desktop */
+  }
 }

@@ -150,12 +150,6 @@ const SignupPage = () => {
             <button type="submit" className="signup-button">
               Create an account
             </button>
-
-            <div className="recaptcha-notice">
-              This site is protected by reCAPTCHA and the{' '}
-              <a href="https://policies.google.com/privacy">Google Privacy Policy</a> and{' '}
-              <a href="https://policies.google.com/terms">Terms of Service</a> apply.
-            </div>
           </form>
         </div>
       </div>
@@ -163,6 +157,14 @@ const SignupPage = () => {
       <div className="signup-right">
         <img src="/man.png" alt="Man working on computer" className="signup-image" />
       </div>
+
+      <footer className="signup-footer">
+        <div className="recaptcha-notice">
+          This site is protected by reCAPTCHA and the{' '}
+          <a href="https://policies.google.com/privacy">Google Privacy Policy</a> and{' '}
+          <a href="https://policies.google.com/terms">Terms of Service</a> apply.
+        </div>
+      </footer>
     </div>
   );
 };

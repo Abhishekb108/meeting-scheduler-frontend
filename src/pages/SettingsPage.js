@@ -107,6 +107,24 @@ function SettingsPage() {
 
   return (
     <div className="profile-container">
+      {/* Header for mobile view */}
+      <div className="header">
+        <div className="sidebar-logo">
+          <img src="/logo.png" alt="CNNCT Logo" />
+        </div>
+        {userName && (
+          <div className="profile-badge" onClick={toggleSignOut}>
+            <img src="/boy.png" alt="Profile" />
+            {showSignOut && (
+              <div className="signout-dropdown">
+                <button onClick={handleSignOut}>Sign Out</button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Sidebar for desktop view */}
       <div className="sidebar">
         <div className="sidebar-logo">
           <img src="/logo.png" alt="CNNCT Logo" />
@@ -150,6 +168,7 @@ function SettingsPage() {
         )}
       </div>
 
+      {/* Main content */}
       <div className="profile-content">
         <h1>Settings</h1>
         <p>Manage settings for your profile</p>
@@ -223,6 +242,38 @@ function SettingsPage() {
             </button>
           </div>
         </form>
+      </div>
+
+      {/* Bottom navigation for mobile view */}
+      <div className="bottom-nav">
+        <div
+          className={`nav-item ${location.pathname === '/dashboard' ? 'active' : ''}`}
+          onClick={() => navigate('/dashboard')}
+        >
+          <span className="nav-icon">📅</span>
+          <span>Events</span>
+        </div>
+        <div
+          className={`nav-item ${location.pathname === '/booking' ? 'active' : ''}`}
+          onClick={() => navigate('/booking')}
+        >
+          <span className="nav-icon">📚</span>
+          <span>Booking</span>
+        </div>
+        <div
+          className={`nav-item ${location.pathname === '/availability' ? 'active' : ''}`}
+          onClick={() => navigate('/availability')}
+        >
+          <span className="nav-icon">⏰</span>
+          <span>Availability</span>
+        </div>
+        <div
+          className={`nav-item ${location.pathname === '/settings' ? 'active' : ''}`}
+          onClick={() => navigate('/settings')}
+        >
+          <span className="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </div>
       </div>
     </div>
   );

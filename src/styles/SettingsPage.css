@@ -179,25 +179,144 @@ body {
   font-size: 14px;
 }
 
+/* Header for mobile view */
+.header {
+  display: none; /* Hidden by default on desktop */
+}
+
+/* Bottom navigation bar for mobile */
+.bottom-nav {
+  display: none; /* Hidden by default on desktop */
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .profile-container {
     flex-direction: column;
     height: auto;
+    position: relative;
+    padding-bottom: 60px; /* Space for bottom nav */
   }
 
   .sidebar {
-    width: 100%;
-    box-shadow: none;
+    display: none !important; /* Force hide sidebar on mobile */
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: white;
     border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header .sidebar-logo img {
+    width: 80px;
+  }
+
+  .header .profile-badge {
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+
+  .header .profile-badge img {
+    width: 32px;
+    height: 32px;
   }
 
   .profile-content {
     padding: 20px;
+    padding-top: 0; /* Adjust for header */
+    background-color: #f4f4f4;
+  }
+
+  .profile-content h1 {
+    font-size: 20px;
+    margin-top: 20px;
+  }
+
+  .profile-content > p {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .profile-form {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-section h2 {
+    font-size: 16px;
+    margin-bottom: 15px;
   }
 
   .form-row {
     flex-direction: column;
     gap: 0;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+
+  .form-group input {
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 6px;
+  }
+
+  .save-button {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    margin-top: 10px;
+  }
+
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border-top: 1px solid #e0e0e0;
+    padding: 10px 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+  }
+
+  .bottom-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    padding: 5px;
+    color: #6B7280;
+  }
+
+  .bottom-nav .nav-item.active {
+    background-color: transparent;
+    color: #2563EB;
+  }
+
+  .bottom-nav .nav-icon {
+    font-size: 20px;
+    margin-bottom: 5px;
   }
 }

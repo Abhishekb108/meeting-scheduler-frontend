@@ -15,6 +15,7 @@ function BookingPage() {
   const [hoveredMeeting, setHoveredMeeting] = useState(null);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [showSignOut, setShowSignOut] = useState(false);
+  const [isMobileModalOpen, setIsMobileModalOpen] = useState(false); // New state for mobile modal
 
   const tabs = ['Upcoming', 'Pending', 'Canceled', 'Past'];
 
@@ -69,6 +70,7 @@ function BookingPage() {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setSelectedMeeting(null);
+    setIsMobileModalOpen(false); // Close modal when switching tabs
   };
 
   const handleSignOut = () => {
@@ -117,7 +119,13 @@ function BookingPage() {
   };
 
   const handleMeetingClick = (meeting) => {
-    setSelectedMeeting(selectedMeeting && selectedMeeting._id === meeting._id ? null : meeting);
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      setSelectedMeeting(meeting);
+      setIsMobileModalOpen(true); // Open modal on mobile
+    } else {
+      setSelectedMeeting(selectedMeeting && selectedMeeting._id === meeting._id ? null : meeting);
+    }
   };
 
   const handleAcceptReject = async (action, e, meetingId) => {
@@ -161,7 +169,8 @@ function BookingPage() {
         )
       );
 
-      setSelectedMeeting(null); // Reset selection after action
+      setSelectedMeeting(null);
+      setIsMobileModalOpen(false); // Close modal after action
     } catch (err) {
       console.log(`Error ${action}ing meeting:`, err);
       setError(err.response?.data?.message || `Failed to ${action} meeting.`);
@@ -170,6 +179,23 @@ function BookingPage() {
 
   return (
     <div className="booking-container">
+      {/* Header for mobile view */}
+      <div className="header">
+        <div className="sidebar-logo">
+          <img src="/logo.png" alt="CNNCT Logo" />
+        </div>
+        {userName && (
+          <div className="profile-badge" onClick={toggleSignOut}>
+            <img src="/boy.png" alt="Profile" />
+            {showSignOut && (
+              <div className="signout-dropdown">
+                <button onClick={handleSignOut}>Sign Out</button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       <div className="sidebar">
         <div className="sidebar-logo">
           <img src="/logo.png" alt="CNNCT Logo" />
@@ -322,12 +348,37 @@ function BookingPage() {
                     </div>
                   )}
 
-                  {isSelected && (
-                    <div className="participants-panel">
-                      <div className="participants-header">
-                        <h3>Participant ({meeting.emails?.length || 0})</h3>
+                  {isSelected && isMobileModalOpen && (
+                    <div className="participants-modal">
+                      <div className="participants-modal-content">
+                        <div className="participants-header">
+                          <h3>Participant ({meeting.emails?.length || 0})</h3>
+                          <button
+                            className="close-modal-btn"
+                            onClick={() => setIsMobileModalOpen(false)}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <div className="participants-list">
+                          {meeting.emails?.map((email, index) => (
+                            <div key={index} className="participant-item">
+                              <div className="participant-img-name">
+                                <div className="participant-img">
+                                  {email.charAt(0).toUpperCase()}
+                                </div>
+                                <span>{email}</span>
+                              </div>
+                              <input
+                                type="checkbox"
+                                checked={meeting.acceptedParticipants?.includes(email) || false}
+                                readOnly
+                              />
+                            </div>
+                          ))}
+                        </div>
                         {activeTab === 'Pending' && (
-                          <div className="action-buttons">
+                          <div className="modal-action-buttons">
                             <button
                               className="reject-btn"
                               onClick={(e) => handleAcceptReject('reject', e, meeting._id)}
@@ -343,28 +394,30 @@ function BookingPage() {
                           </div>
                         )}
                       </div>
-                      <div className="participants-list">
-                        {meeting.emails?.map((email, index) => (
-                          <div key={index} className="participant-item">
-                            <div className="participant-img-name">
-                              <div className="participant-img">
-                                {email.charAt(0).toUpperCase()}
-                              </div>
-                              <span>{email}</span>
-                            </div>
-                            <input
-                              type="checkbox"
-                              checked={meeting.acceptedParticipants?.includes(email) || false}
-                              readOnly
-                            />
-                          </div>
-                        ))}
-                      </div>
                     </div>
                   )}
                 </div>
               );
             })}
+        </div>
+
+        <div className="mobile-nav">
+          <div className="nav-item" onClick={() => navigate('/dashboard')}>
+            <span className="nav-icon">📅</span>
+            Events
+          </div>
+          <div className="nav-item active">
+            <span className="nav-icon">📚</span>
+            Booking
+          </div>
+          <div className="nav-item" onClick={() => navigate('/availability')}>
+            <span className="nav-icon">⏰</span>
+            Availability
+          </div>
+          <div className="nav-item" onClick={() => navigate('/settings')}>
+            <span className="nav-icon">⚙️</span>
+            Settings
+          </div>
         </div>
       </div>
     </div>

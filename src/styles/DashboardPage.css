@@ -17,6 +17,9 @@
 .logo {
   margin-bottom: 30px;
 }
+.logo img {
+  width: 100px;
+}
 
 .profile-badge {
   display: flex;
@@ -27,7 +30,7 @@
   background-color: #F3F4F6;
   position: relative;
   cursor: pointer;
-  margin-top: 20px; /* Reduced margin to move the profile badge higher */
+  margin-top: 20px;
 }
 
 .profile-badge img {
@@ -66,7 +69,7 @@
   flex-direction: column;
   gap: 15px;
   margin-top: 20px;
-  margin-bottom: 30px; /* Added margin to push the create button further up */
+  margin-bottom: 30px;
 }
 
 .nav-item {
@@ -97,6 +100,7 @@
   flex-grow: 1;
   padding: 30px;
   background-color: #F9FAFB;
+  overflow-y: auto;
 }
 
 .main-content header {
@@ -145,11 +149,11 @@
 }
 
 .event-active {
-  border-top: 12px solid #2563EB; /* Increased thickness to 12px (3x thicker than 4px) */
+  border-top: 12px solid #2563EB;
 }
 
 .event-inactive {
-  border-top: 12px solid #6B7280; /* Increased thickness to 12px (3x thicker than 4px) */
+  border-top: 12px solid #6B7280;
 }
 
 .event-details {
@@ -199,7 +203,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #6B7280; /* Grey when toggle is off */
+  background-color: #6B7280;
   transition: 0.4s;
   border-radius: 20px;
 }
@@ -217,7 +221,7 @@
 }
 
 input:checked + .slider {
-  background-color: #2563EB; /* Blue when toggle is on */
+  background-color: #2563EB;
 }
 
 input:checked + .slider:before {
@@ -248,4 +252,178 @@ input:checked + .slider:before {
   color: #d32f2f;
   font-size: 0.9rem;
   text-align: center;
+}
+
+.conflict-message {
+  color: #EF4444;
+  font-size: 12px;
+  font-weight: 500;
+  margin: 8px 0;
+  padding: 4px 8px;
+  background-color: #FEE2E2;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* Header for mobile view */
+.header {
+  display: none; /* Hidden by default on desktop */
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .landing-page {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar {
+    display: none; /* Hide sidebar on mobile */
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header .sidebar-logo img {
+    width: 80px;
+  }
+
+  .header .profile-badge {
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+
+  .header .profile-badge img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .main-content {
+    padding: 20px;
+    padding-top: 0; /* Adjust for header */
+    padding-bottom: 80px; /* Space for mobile nav */
+  }
+
+  .main-content header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .main-content header h1 {
+    font-size: 20px;
+    margin-top: 20px;
+  }
+
+  .main-content header p {
+    font-size: 14px;
+  }
+
+  .add-new-event-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .event-card {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .event-active,
+  .event-inactive {
+    border-top-width: 8px; /* Slightly thinner for mobile */
+  }
+
+  .event-details p {
+    font-size: 12px;
+    margin: 6px 0;
+  }
+
+  .event-actions {
+    gap: 6px;
+  }
+
+  .switch {
+    width: 36px;
+    height: 18px;
+  }
+
+  .slider:before {
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(18px);
+  }
+
+  .copy-btn,
+  .edit-btn,
+  .delete-btn {
+    padding: 4px;
+    font-size: 12px;
+  }
+
+  .conflict-message {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .mobile-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    z-index: 100;
+  }
+
+  .mobile-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    color: #6B7280;
+    padding: 5px;
+  }
+
+  .mobile-nav .nav-item.active {
+    color: #2563EB;
+    background-color: transparent;
+  }
+
+  .nav-icon {
+    font-size: 20px;
+    margin-bottom: 5px;
+  }
+}
+
+/* Ensure desktop styles are preserved for larger screens */
+@media (min-width: 769px) {
+  .mobile-nav {
+    display: none; /* Hide mobile nav on desktop */
+  }
 }

@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import API from '../api';
 import '../styles/EventLinkPage.css';
 
 function EventLinkPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const location = useLocation();
   const [bannerTitle, setBannerTitle] = useState('');
   const [backgroundColor, setBackgroundColor] = useState('#000000');
   const [meetingLink, setMeetingLink] = useState('');
   const [memberEmails, setMemberEmails] = useState('');
   const [error, setError] = useState('');
-  const [userName, setUserName] = useState(location.state?.userName || 'sarthak pal');
-  const [editEventId, setEditEventId] = useState(location.state?.editEventId || null);
 
   const backgroundColors = [
     { color: '#ff5722', hex: '#ff5722' },
@@ -71,16 +68,6 @@ function EventLinkPage() {
         .map((email) => email.trim())
         .filter((email) => email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
 
-      // If this is an edit, delete the original event before saving the new one
-      if (editEventId) {
-        await API.delete(`/meetings/${editEventId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      }
-
-      // Save the new/updated event details
       await API.put(
         `/meetings/${id}`,
         {
@@ -96,7 +83,7 @@ function EventLinkPage() {
         }
       );
 
-      navigate('/dashboard', { state: { userName } }); // Redirect to Dashboard with userName
+      navigate('/dashboard'); // Redirect to Dashboard
     } catch (err) {
       console.log('Error saving event updates:', err);
       setError(err.response?.data?.message || 'Failed to save event updates.');
@@ -199,7 +186,7 @@ function EventLinkPage() {
           </div>
 
           <div className="form-actions">
-            <button className="btn-cancel" onClick={() => navigate('/dashboard', { state: { userName } })}>
+            <button className="btn-cancel" onClick={() => navigate('/dashboard')}>
               Cancel
             </button>
             <button className="btn-save" onClick={handleSave}>
@@ -207,11 +194,6 @@ function EventLinkPage() {
             </button>
           </div>
         </div>
-      </div>
-
-      <div className="user-profile">
-        <img src="/boy.png" alt="User" />
-        <span>{userName}</span> {/* Dynamic userName instead of hardcoded */}
       </div>
     </div>
   );

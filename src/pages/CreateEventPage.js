@@ -26,7 +26,7 @@ function CreateEventPage() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         if (!token) {
           setError("You are not authenticated. Please log in again.");
           navigate("/login");
@@ -47,9 +47,10 @@ function CreateEventPage() {
         });
         setExistingMeetings(meetingsResponse.data.meetings || []);
 
-        if (id) {
+        if (id || editEventId) {
           setIsEditing(true);
-          const eventResponse = await API.get(`/meetings/${id}`, {
+          const eventId = id || editEventId;
+          const eventResponse = await API.get(`/meetings/${eventId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -75,7 +76,7 @@ function CreateEventPage() {
     };
 
     fetchUserData();
-  }, [navigate, id]);
+  }, [navigate, id, editEventId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -92,7 +93,7 @@ function CreateEventPage() {
     );
 
     return existingMeetings.some((meeting) => {
-      if (isEditing && meeting._id === id) return false;
+      if (isEditing && meeting._id === (id || editEventId)) return false;
       const existingStart = new Date(meeting.dateTime);
       const existingEnd = new Date(existingStart.getTime() + 60 * 60 * 1000);
       return (
@@ -110,19 +111,13 @@ function CreateEventPage() {
       alert("Please select a date and time.");
       return;
     }
-  
-    // Convert datetime-local input to a Date object
+
     const selectedDate = new Date(formData.dateTime);
-  
-    // Extract day, startTime, and endTime
     const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const day = daysOfWeek[selectedDate.getDay()]; // Get day as 'Mon', 'Tue', etc.
-    
-    // Format time as HH:MM (24-hour format)
-    const startTime = selectedDate.toTimeString().slice(0, 5); // Extract HH:MM
-    const endTime = "18:00"; // Set a default end time or allow user input
-  
-    // Send API request
+    const day = daysOfWeek[selectedDate.getDay()];
+    const startTime = selectedDate.toTimeString().slice(0, 5);
+    const endTime = "18:00";
+
     try {
       const response = await API.post(
         "/availability",
@@ -135,13 +130,11 @@ function CreateEventPage() {
           },
         }
       );
-  
       console.log("Availability saved:", response.data);
     } catch (error) {
       console.error("Error saving availability:", error);
     }
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -171,10 +164,10 @@ function CreateEventPage() {
 
       if (isEditing) {
         await API.put(
-          `/meetings/${id}`,
+          `/meetings/${id || editEventId}`,
           {
             title: formData.title,
-            dateTime: formData.dateTime,
+            dateTime: new Date(formData.dateTime).toISOString(), // Ensure ISO format
             description: formData.description,
             password: formData.password,
           },
@@ -184,13 +177,13 @@ function CreateEventPage() {
             },
           }
         );
-        navigate(`/event-link/${id}`, { state: { userName } });
+        navigate(`/event-link/${id || editEventId}`, { state: { userName } });
       } else {
         const response = await API.post(
           "/meetings",
           {
             title: formData.title,
-            dateTime: formData.dateTime,
+            dateTime: new Date(formData.dateTime).toISOString(), // Ensure ISO format
             description: formData.description,
             link: `https://cnnct.com/meeting/${Date.now()}`,
             status: "accepted",
@@ -203,7 +196,6 @@ function CreateEventPage() {
             },
           }
         );
-        // handleSaveAvailability()
         navigate(`/event-link/${response.data.meeting._id}`, {
           state: { userName, editEventId },
         });

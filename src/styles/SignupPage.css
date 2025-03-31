@@ -11,6 +11,7 @@
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
+  position: relative;
 }
 
 .signup-left {
@@ -31,6 +32,14 @@
   justify-content: center;
   align-items: center;
   max-width: 50%;
+}
+
+.signup-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 1rem;
+  background-color: #fff;
 }
 
 .logo-container {
@@ -171,7 +180,7 @@ input[type="password"] {
     flex-direction: column;
     height: auto;
   }
-  
+
   .signup-left, 
   .signup-right {
     max-width: 100%;
@@ -207,6 +216,11 @@ input[type="password"] {
 
   .signin-link {
     text-align: center;
+  }
+
+  .signup-footer {
+    position: static;
+    padding: 1rem;
   }
 }
 
@@ -246,5 +260,9 @@ input[type="password"] {
   .logo img {
     width: 500px;
     height: 250px;
+  }
+
+  .signup-footer {
+    padding: 0.5rem;
   }
 }

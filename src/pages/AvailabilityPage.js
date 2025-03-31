@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // Added useLocation for navigation state
 import API from "../api";
 import "../styles/AvailabilityPage.css";
 import { Calendar, momentLocalizer } from "react-big-calendar";
@@ -10,6 +10,7 @@ const localizer = momentLocalizer(moment);
 
 function AvailabilityPage() {
   const navigate = useNavigate();
+  const location = useLocation(); // Added to track the current route
   const [activeView, setActiveView] = useState("Availability");
   const [availabilitySlots, setAvailabilitySlots] = useState({
     Sun: { available: false, slots: [] },
@@ -20,7 +21,10 @@ function AvailabilityPage() {
     Fri: { available: false, slots: [] },
     Sat: { available: false, slots: [] },
   });
-  const [calendarView, setCalendarView] = useState("week");
+  const [calendarView, setCalendarView] = useState(() => {
+    // Default to week view on mobile
+    return window.innerWidth <= 768 ? "week" : "week";
+  });
   const [events, setEvents] = useState([]);
   const [error, setError] = useState("");
   const [activity, setActivity] = useState("Event type");
@@ -250,19 +254,49 @@ function AvailabilityPage() {
 
   return (
     <div className="availability-container">
+      {/* Header for mobile view */}
+      <div className="header">
+        <div className="sidebar-logo">
+          <img src="/logo.png" alt="CNNCT Logo" />
+        </div>
+        {userName && (
+          <div className="profile-badge" onClick={toggleSignOut}>
+            <img src="/boy.png" alt="Profile" />
+            {showSignOut && (
+              <div className="signout-dropdown">
+                <button onClick={handleSignOut}>Sign Out</button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       <div className="sidebar">
         <div className="sidebar-logo">
           <img src="/logo.png" alt="CNNCT Logo" />
         </div>
         <nav className="sidebar-nav">
-          <div className="nav-item" onClick={() => navigate("/dashboard")}>
+          <div
+            className={`nav-item ${location.pathname === '/dashboard' ? 'active' : ''}`}
+            onClick={() => navigate("/dashboard")}
+          >
             Events
           </div>
-          <div className="nav-item" onClick={() => navigate("/booking")}>
+          <div
+            className={`nav-item ${location.pathname === '/booking' ? 'active' : ''}`}
+            onClick={() => navigate("/booking")}
+          >
             Booking
           </div>
-          <div className="nav-item active">Availability</div>
-          <div className="nav-item" onClick={() => navigate("/settings")}>
+          <div
+            className={`nav-item ${location.pathname === '/availability' ? 'active' : ''}`}
+          >
+            Availability
+          </div>
+          <div
+            className={`nav-item ${location.pathname === '/settings' ? 'active' : ''}`}
+            onClick={() => navigate("/settings")}
+          >
             Settings
           </div>
         </nav>
@@ -420,7 +454,7 @@ function AvailabilityPage() {
                 events={renderCalendarEvents()}
                 startAccessor="start"
                 endAccessor="end"
-                style={{ height: 600 }}
+                style={{ height: window.innerWidth <= 768 ? 400 : 600 }}
                 view={calendarView}
                 onView={setCalendarView}
                 defaultView={calendarView}
@@ -461,6 +495,37 @@ function AvailabilityPage() {
             </div>
           </div>
         )}
+
+        {/* Add mobile navigation bar */}
+        <div className="mobile-nav">
+          <div
+            className={`nav-item ${location.pathname === '/dashboard' ? 'active' : ''}`}
+            onClick={() => navigate('/dashboard')}
+          >
+            <span className="nav-icon">📅</span>
+            Events
+          </div>
+          <div
+            className={`nav-item ${location.pathname === '/booking' ? 'active' : ''}`}
+            onClick={() => navigate('/booking')}
+          >
+            <span className="nav-icon">📚</span>
+            Booking
+          </div>
+          <div
+            className={`nav-item ${location.pathname === '/availability' ? 'active' : ''}`}
+          >
+            <span className="nav-icon">⏰</span>
+            Availability
+          </div>
+          <div
+            className={`nav-item ${location.pathname === '/settings' ? 'active' : ''}`}
+            onClick={() => navigate('/settings')}
+          >
+            <span className="nav-icon">⚙️</span>
+            Settings
+          </div>
+        </div>
       </div>
     </div>
   );
